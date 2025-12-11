@@ -1,4 +1,4 @@
-# 💰 Monthly Budget Tracker
+# 💰 Monthly Expenses Tracker
 
 A lightweight, Python-based Command Line Interface (CLI) application designed to help users track their monthly salary, log expenses, and calculate their remaining balance. The application uses JSON for persistent data storage, ensuring your records remain saved between sessions.
 

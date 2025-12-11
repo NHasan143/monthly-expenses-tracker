@@ -1,0 +1,25 @@
+{
+    "salary": 10000.0,
+    "expenses": [
+        {
+            "description": "House rent",
+            "amount": 2000.0,
+            "category": "Accomodation"
+        },
+        {
+            "description": "Gas, Water, Internet, Phone bill",
+            "amount": 550.0,
+            "category": "Utility Bill"
+        },
+        {
+            "description": "Food and monthly groceries",
+            "amount": 2300.0,
+            "category": "Groceries"
+        },
+        {
+            "description": "Movies, restaurant, fun activities",
+            "amount": 320.0,
+            "category": "Entertainment"
+        }
+    ]
+}
