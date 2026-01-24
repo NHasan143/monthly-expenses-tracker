@@ -1,0 +1,15 @@
+{
+    "salary": 50000.0,
+    "expenses": [
+        {
+            "description": "House rent",
+            "amount": 7000.0,
+            "category": "Accomodation"
+        },
+        {
+            "description": "same",
+            "amount": 100.0,
+            "category": "same"
+        }
+    ]
+}

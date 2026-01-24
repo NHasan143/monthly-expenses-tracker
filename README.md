@@ -85,7 +85,7 @@ Example budget_data.json:
 
     [Added] Add the ability to delete specific expenses.
 
-    [ ] Export summary to a .csv or .txt file.
+    [Added] Export summary to a .csv or .txt file.
 
     [ ] Visualize spending with a pie chart.
 

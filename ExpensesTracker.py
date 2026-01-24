@@ -1,5 +1,6 @@
 import os
 import json
+import csv
 from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
@@ -24,6 +25,41 @@ def save_data(data):
     """Save salary and expenses to a file."""
     with open('budget_data.json', 'w') as file:
         json.dump(data, file, indent=4)
+
+def export_to_csv(data):
+    """Exports the current budget data to a CSV file."""
+    filename = "budget_export.csv"
+    console.print(f"\n[bold magenta]--- Exporting to {filename} ---[/bold magenta]")
+    
+    try:
+        with open(filename, mode='w', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+            
+            # Write Headers
+            writer.writerow(["Description", "Category", "Amount"])
+            
+            # Write Expenses
+            for expense in data["expenses"]:
+                writer.writerow([
+                    expense["description"], 
+                    expense.get("category", "Uncategorized"), 
+                    f"{expense['amount']:.2f}"
+                ])
+            
+            # Write Summary Section at the bottom
+            total_expenses = sum(e['amount'] for e in data['expenses'])
+            balance = data['salary'] - total_expenses
+            
+            writer.writerow([]) # Blank row
+            writer.writerow(["--- SUMMARY ---", "", ""])
+            writer.writerow(["Monthly Salary", "", f"{data['salary']:.2f}"])
+            writer.writerow(["Total Expenses", "", f"{total_expenses:.2f}"])
+            writer.writerow(["Remaining Balance", "", f"{balance:.2f}"])
+            
+        console.print(f"[bold green]✅ Data successfully exported to '{filename}'[/bold green]")
+        
+    except IOError as e:
+        console.print(f"[bold red]Error exporting to CSV: {e}[/bold red]")
 
 def calculate_balance(salary, expenses):
     """Calculate remaining balance."""
@@ -54,8 +90,9 @@ def display_menu():
         "[bold cyan]2.[/bold cyan] Add New Expense\n"
         "[bold cyan]3.[/bold cyan] Manage Expenses (Edit/Delete)\n"
         "[bold cyan]4.[/bold cyan] View Full Dashboard\n"
-        "[bold cyan]5.[/bold cyan] Reset All Data ([bold red]Caution![/bold red])\n"
-        "[bold cyan]6.[/bold cyan] Exit Application",
+        "[bold cyan]5.[/bold cyan] Export Summary to CSV\n"
+        "[bold cyan]6.[/bold cyan] Reset All Data ([bold red]Caution![/bold red])\n"
+        "[bold cyan]7.[/bold cyan] Exit Application",
         title="[bold yellow]Main Menu[/bold yellow]",
         border_style="blue",
         width=70
@@ -282,24 +319,26 @@ def run_app():
         display_dashboard(data)
         display_menu()
 
-        choice = console.input("Enter your option (1-6): ")
+        choice = console.input("Enter your option (1-7): ")
         
         if choice == '1':
             update_salary(data) 
         elif choice == '2':
             add_new_expense(data)
         elif choice == '3':
-            manage_expenses(data)  # <-- New feature added here
+            manage_expenses(data)
         elif choice == '4':
             console.print("[dim]Dashboard refreshed.[/dim]")
             pass 
         elif choice == '5':
-            data = reset_data()
+            export_to_csv(data) # <-- New feature call
         elif choice == '6':
+            data = reset_data()
+        elif choice == '7':
             console.print("[bold red]👋 Thanks for using the Expenses Tracker. Good Luck![/bold red]")
             break
         else:
-            console.print("[bold red]Invalid choice. Please enter a number between 1 and 6.[/bold red]")
+            console.print("[bold red]Invalid choice. Please enter a number between 1 and 7.[/bold red]")
         
         console.input("\n[dim]Press Enter to return to the menu...[/dim]") 
         console.clear() 
