@@ -1,15 +1,30 @@
 {
-    "salary": 50000.0,
+    "salary": 10000.0,
     "expenses": [
         {
-            "description": "House rent",
-            "amount": 7000.0,
+            "description": "House Rent and accomodation",
+            "amount": 3500.0,
             "category": "Accomodation"
         },
         {
-            "description": "same",
-            "amount": 100.0,
-            "category": "same"
+            "description": "Food and Groceries",
+            "amount": 3000.0,
+            "category": "Groceries"
+        },
+        {
+            "description": "Travel, Entertainment",
+            "amount": 500.0,
+            "category": "Entertainment"
+        },
+        {
+            "description": "Electricity, Internet, Gas, Water bill",
+            "amount": 1000.0,
+            "category": "Utilities"
+        },
+        {
+            "description": "Pocket money and other minor stuff",
+            "amount": 300.0,
+            "category": "Pocket money"
         }
     ]
 }

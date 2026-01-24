@@ -87,7 +87,7 @@ Example budget_data.json:
 
     [Added] Export summary to a .csv or .txt file.
 
-    [ ] Visualize spending with a pie chart.
+    [Working] Visualize spending with a pie chart.
 
     [ ] Add a web interface dasboard
 

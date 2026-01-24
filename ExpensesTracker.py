@@ -1,6 +1,7 @@
 import os
 import json
 import csv
+import matplotlib.pyplot as plt
 from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
@@ -61,6 +62,43 @@ def export_to_csv(data):
     except IOError as e:
         console.print(f"[bold red]Error exporting to CSV: {e}[/bold red]")
 
+def visualize_spending(data):
+    """Generates a pie chart of spending by category and saves it as an image."""
+    console.print("\n[bold magenta]--- Visualizing Spending ---[/bold magenta]")
+    expenses = data["expenses"]
+    
+    if not expenses:
+        console.print("[yellow]No expenses recorded to visualize.[/yellow]")
+        return
+
+    # Aggregate data by category
+    category_totals = {}
+    for expense in expenses:
+        cat = expense.get('category', 'Uncategorized')
+        category_totals[cat] = category_totals.get(cat, 0.0) + expense['amount']
+    
+    # Prepare lists for plotting
+    labels = list(category_totals.keys())
+    sizes = list(category_totals.values())
+    
+    try:
+        # Create the pie chart
+        plt.figure(figsize=(10, 7))
+        plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140, shadow=True)
+        plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+        plt.title('Expense Distribution by Category')
+        
+        # Save the file
+        filename = 'spending_pie_chart.png'
+        plt.savefig(filename)
+        plt.close() # Close the plot to free memory
+        
+        console.print(f"[bold green]✅ Pie chart saved successfully to '{filename}'[/bold green]")
+        console.print("[dim]Open the file in your image viewer to see the chart.[/dim]")
+        
+    except Exception as e:
+        console.print(f"[bold red]Error generating chart: {e}[/bold red]")
+
 def calculate_balance(salary, expenses):
     """Calculate remaining balance."""
     total_expenses = sum(expense['amount'] for expense in expenses)
@@ -91,8 +129,9 @@ def display_menu():
         "[bold cyan]3.[/bold cyan] Manage Expenses (Edit/Delete)\n"
         "[bold cyan]4.[/bold cyan] View Full Dashboard\n"
         "[bold cyan]5.[/bold cyan] Export Summary to CSV\n"
-        "[bold cyan]6.[/bold cyan] Reset All Data ([bold red]Caution![/bold red])\n"
-        "[bold cyan]7.[/bold cyan] Exit Application",
+        "[bold cyan]6.[/bold cyan] Visualize Spending (Pie Chart)\n"
+        "[bold cyan]7.[/bold cyan] Reset All Data ([bold red]Caution![/bold red])\n"
+        "[bold cyan]8.[/bold cyan] Exit Application",
         title="[bold yellow]Main Menu[/bold yellow]",
         border_style="blue",
         width=70
@@ -319,7 +358,7 @@ def run_app():
         display_dashboard(data)
         display_menu()
 
-        choice = console.input("Enter your option (1-7): ")
+        choice = console.input("Enter your option (1-8): ")
         
         if choice == '1':
             update_salary(data) 
@@ -331,14 +370,16 @@ def run_app():
             console.print("[dim]Dashboard refreshed.[/dim]")
             pass 
         elif choice == '5':
-            export_to_csv(data) # <-- New feature call
+            export_to_csv(data)
         elif choice == '6':
-            data = reset_data()
+            visualize_spending(data)
         elif choice == '7':
+            data = reset_data()
+        elif choice == '8':
             console.print("[bold red]👋 Thanks for using the Expenses Tracker. Good Luck![/bold red]")
             break
         else:
-            console.print("[bold red]Invalid choice. Please enter a number between 1 and 7.[/bold red]")
+            console.print("[bold red]Invalid choice. Please enter a number between 1 and 8.[/bold red]")
         
         console.input("\n[dim]Press Enter to return to the menu...[/dim]") 
         console.clear() 
