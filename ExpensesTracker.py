@@ -52,9 +52,10 @@ def display_menu():
     menu = Panel(
         "[bold cyan]1.[/bold cyan] Update Your Monthly Salary\n" 
         "[bold cyan]2.[/bold cyan] Add New Expense\n"
-        "[bold cyan]3.[/bold cyan] View Full Dashboard\n"
-        "[bold cyan]4.[/bold cyan] Reset All Data ([bold red]Caution![/bold red])\n"
-        "[bold cyan]5.[/bold cyan] Exit Application",
+        "[bold cyan]3.[/bold cyan] Manage Expenses (Edit/Delete)\n"
+        "[bold cyan]4.[/bold cyan] View Full Dashboard\n"
+        "[bold cyan]5.[/bold cyan] Reset All Data ([bold red]Caution![/bold red])\n"
+        "[bold cyan]6.[/bold cyan] Exit Application",
         title="[bold yellow]Main Menu[/bold yellow]",
         border_style="blue",
         width=70
@@ -94,6 +95,91 @@ def add_new_expense(data):
             
     console.print("[dim]Finished adding expenses. Returning to main menu...[/dim]")
 
+def manage_expenses(data):
+    """Allows the user to view a numbered list of expenses to modify or delete."""
+    console.print("\n[bold magenta]--- Manage Expenses ---[/bold magenta]")
+    expenses = data["expenses"]
+    
+    if not expenses:
+        console.print("[yellow]No expenses found to manage.[/yellow]")
+        return
+
+    # Display a table with IDs so the user can select one
+    table = Table(title="Select an Expense", show_header=True, header_style="bold magenta", width=70)
+    table.add_column("ID", style="cyan", width=5, justify="center")
+    table.add_column("Description", style="dim", min_width=20)
+    table.add_column("Category", style="yellow", min_width=15)
+    table.add_column("Amount", justify="right", style="cyan")
+
+    for idx, expense in enumerate(expenses):
+        table.add_row(
+            str(idx + 1),
+            expense['description'],
+            expense.get('category', '[Uncategorized]'),
+            f"${expense['amount']:.2f}"
+        )
+    console.print(table)
+
+    try:
+        # Get ID input
+        choice_input = console.input("Enter the [bold cyan]ID[/bold cyan] of the expense (or 0 to cancel): ")
+        choice_idx = int(choice_input) - 1
+
+        if choice_idx == -1:
+            console.print("[dim]Operation cancelled.[/dim]")
+            return
+
+        if 0 <= choice_idx < len(expenses):
+            selected_expense = expenses[choice_idx]
+            console.print(f"\nSelected: [bold]{selected_expense['description']}[/bold] (${selected_expense['amount']})")
+            action = console.input("Do you want to [bold blue](M)odify[/bold blue] or [bold red](D)elete[/bold red] this expense? ").lower()
+
+            if action in ('d', 'delete'):
+                confirm = console.input("Are you sure? (y/n): ").lower()
+                if confirm == 'y':
+                    removed_item = expenses.pop(choice_idx)
+                    save_data(data)
+                    console.print(f"[bold green]✅ Deleted '{removed_item['description']}' successfully.[/bold green]")
+                else:
+                    console.print("[dim]Deletion cancelled.[/dim]")
+
+            elif action in ('m', 'modify', 'edit'):
+                console.print("[dim]Press Enter to keep current value.[/dim]")
+                
+                # Edit Description
+                new_desc = console.input(f"Description [{selected_expense['description']}]: ")
+                if new_desc.strip():
+                    selected_expense['description'] = new_desc
+
+                # Edit Category
+                current_cat = selected_expense.get('category', 'Uncategorized')
+                new_cat = console.input(f"Category [{current_cat}]: ")
+                if new_cat.strip():
+                    selected_expense['category'] = new_cat
+
+                # Edit Amount
+                new_amount_str = console.input(f"Amount [{selected_expense['amount']}]: ")
+                if new_amount_str.strip():
+                    try:
+                        new_amount = float(new_amount_str)
+                        if new_amount > 0:
+                            selected_expense['amount'] = new_amount
+                        else:
+                            console.print("[red]Amount must be positive. Keeping old amount.[/red]")
+                    except ValueError:
+                        console.print("[red]Invalid number. Keeping old amount.[/red]")
+
+                save_data(data)
+                console.print("[bold green]✅ Expense updated successfully![/bold green]")
+            else:
+                console.print("[yellow]Invalid action selected.[/yellow]")
+        else:
+            console.print("[bold red]Invalid ID selected.[/bold red]")
+
+    except ValueError:
+        console.print("[bold red]Please enter a valid numeric ID.[/bold red]")
+
+
 def update_salary(data):
     """Prompts user to update the monthly salary."""
     console.print("\n[bold magenta]--- Update Salary ---[/bold magenta]")
@@ -121,19 +207,19 @@ def display_dashboard(data):
     salary = data["salary"]
     expenses = data["expenses"]
     
-    # 1. Calculate Totals (Logic unchanged)
+    # 1. Calculate Totals
     total_expenses = sum(expense['amount'] for expense in expenses)
     balance = calculate_balance(salary, expenses)
     balance_style = "bold green" if balance >= 0 else "bold red"
 
     console.print("\n[bold yellow]--- CURRENT BUDGET DASHBOARD ---[/bold yellow]")
 
-    # 2. Expense Table (WIDTH ADDED)
+    # 2. Expense Table
     expense_table = Table(
         title="Expense Breakdown", 
         show_header=True, 
         header_style="bold magenta",
-        width=70  # <-- NEW: Fixed width added here
+        width=70
     )
     expense_table.add_column("Description", style="dim", min_width=20)
     expense_table.add_column("Category", style="yellow", min_width=15)
@@ -152,7 +238,7 @@ def display_dashboard(data):
 
     console.print(expense_table)
     
-    # 3. Category-wise Summary Logic (Logic unchanged)
+    # 3. Category-wise Summary Logic
     category_totals = {}
     for expense in expenses:
         category = expense.get('category', '[Uncategorized]')
@@ -166,7 +252,7 @@ def display_dashboard(data):
     else:
         category_list = "  [italic]No categories recorded.[/italic]\n"
     
-    # 4. Final Summary Panel (WIDTH ADDED)
+    # 4. Final Summary Panel
     summary_content = (
         f"[bold white]Monthly Salary:[/bold white] [green]${salary:.2f}[/green]\n"
         f"[bold white]Total Expenses:[/bold white] [red]${total_expenses:.2f}[/red]\n"
@@ -181,7 +267,7 @@ def display_dashboard(data):
         title="[bold yellow]💰 Budget Overview[/bold yellow]", 
         border_style="blue",
         padding=(1, 2),
-        width=70  # <-- NEW: Fixed width added here
+        width=70
     ))
 
 
@@ -196,22 +282,24 @@ def run_app():
         display_dashboard(data)
         display_menu()
 
-        choice = console.input("Enter your option (1-5): ")
+        choice = console.input("Enter your option (1-6): ")
         
         if choice == '1':
             update_salary(data) 
         elif choice == '2':
-            add_new_expense(data) 
+            add_new_expense(data)
         elif choice == '3':
+            manage_expenses(data)  # <-- New feature added here
+        elif choice == '4':
             console.print("[dim]Dashboard refreshed.[/dim]")
             pass 
-        elif choice == '4':
-            data = reset_data()
         elif choice == '5':
+            data = reset_data()
+        elif choice == '6':
             console.print("[bold red]👋 Thanks for using the Expenses Tracker. Good Luck![/bold red]")
             break
         else:
-            console.print("[bold red]Invalid choice. Please enter a number between 1 and 5.[/bold red]")
+            console.print("[bold red]Invalid choice. Please enter a number between 1 and 6.[/bold red]")
         
         console.input("\n[dim]Press Enter to return to the menu...[/dim]") 
         console.clear() 

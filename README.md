@@ -81,9 +81,9 @@ Example budget_data.json:
 
 🔮 Features to be added
 
-    [ ] Add categories for expenses (e.g., Food, Transport, Utilities).
+    [Added] Add categories for expenses (e.g., Food, Transport, Utilities).
 
-    [ ] Add the ability to delete specific expenses.
+    [Added] Add the ability to delete specific expenses.
 
     [ ] Export summary to a .csv or .txt file.
 
