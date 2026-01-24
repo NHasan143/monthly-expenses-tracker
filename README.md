@@ -89,6 +89,8 @@ Example budget_data.json:
 
     [ ] Visualize spending with a pie chart.
 
+    [ ] Add a web interface dasboard
+
 📄 License
 
 This project is open-source and available under the MIT License.
