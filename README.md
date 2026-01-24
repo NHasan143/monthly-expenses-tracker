@@ -19,8 +19,8 @@ A lightweight, Python-based Command Line Interface (CLI) application designed to
 
 1.  **Clone the Repository** (or download the source code):
     ```bash
-    git clone [https://github.com/NHasan143/budget-tracker.git](https://github.com/NHasan143/budget-tracker.git)
-    cd budget-tracker
+    git clone [https://github.com/NHasan143/monthly-expenses-tracker.git](https://github.com/NHasan143/monthly-expenses-tracker.git)
+    cd monthly-expenses-tracker
     ```
 
 2.  **Run the Application:**
@@ -79,7 +79,7 @@ Example budget_data.json:
     ]
 }
 
-🔮 Future Improvements
+🔮 Features to be added
 
     [ ] Add categories for expenses (e.g., Food, Transport, Utilities).
 
@@ -92,5 +92,6 @@ Example budget_data.json:
 📄 License
 
 This project is open-source and available under the MIT License.
+
 
 Created by Naymul Hasan
