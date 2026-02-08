@@ -39,7 +39,7 @@ This project demonstrates:
 - Add, categorize, and store expenses
 - Calculate total expenses and remaining balance
 - Persistent local storage using JSON files
-- Lightweight and dependency-free
+- Lightweight
 
 ---
 
@@ -146,3 +146,4 @@ Licensed under the MIT License. See [LICENSE](./LICENSE).
 
 **Naymul Hasan**  
 GitHub: https://github.com/NHasan143
+
