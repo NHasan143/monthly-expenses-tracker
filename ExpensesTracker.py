@@ -9,7 +9,7 @@ from rich.panel import Panel
 # Initialize the rich console object for all output
 console = Console()
 
-# --- Data Handling Functions ---
+# --- Data Handling Functions ---8
 
 def load_data():
     """Load salary and expenses from a file, or initialize if file doesn't exist."""
