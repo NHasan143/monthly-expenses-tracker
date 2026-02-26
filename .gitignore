@@ -1,0 +1,28 @@
+# ── Python ────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# ── Virtual Environment ────────────────────────────────────────
+.venv/
+venv/
+env/
+
+# ── Flask ─────────────────────────────────────────────────────
+instance/
+.env
+.flaskenv
+
+# ── Project Data (personal financial data) ────────────────────
+budget_data.json
+budget_export.csv
+spending_pie_chart.png
+
+# ── macOS ─────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+
+# ── VS Code ───────────────────────────────────────────────────
+.vscode/
+*.code-workspace
