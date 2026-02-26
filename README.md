@@ -1,15 +1,16 @@
-<h1 align="center"> 💰 Monthly Expenses Tracker (Python CLI)</h1>
+<h1 align="center"> 💰 Monthly Expenses Tracker (Flask Web App)</h1>
 
 <p align="center">
-  A simple Python CLI tool to track monthly income and expenses using local JSON storage.
+  A clean, modern web dashboard to track monthly income and expenses — built with Flask and local JSON storage.
 </p>
 
 ---
 <p align="center">
-  </a>
-    <img src="https://img.shields.io/badge/python-3.8+-blue?style=flat-square" alt="Python" />
+  <img src="https://img.shields.io/badge/python-3.8+-blue?style=flat-square" alt="Python" />
+  <img src="https://img.shields.io/badge/flask-3.0+-black?style=flat-square&logo=flask" alt="Flask" />
   <a href="./LICENSE">
     <img src="https://img.shields.io/github/license/NHasan143/monthly-expenses-tracker?style=flat-square" alt="License" />
+  </a>
   <a href="https://github.com/NHasan143/monthly-expenses-tracker/stargazers">
     <img src="https://img.shields.io/github/stars/NHasan143/monthly-expenses-tracker?style=flat-square" alt="GitHub stars" />
   </a>
@@ -23,30 +24,35 @@
 
 ## 📌 Overview
 
-**Monthly Expenses Tracker** is a **Python CLI-based expense tracker** that helps users manage monthly budgets by recording income and expenses locally.  
-It is ideal for developers who want a **simple, offline personal finance tool** without databases or external services.
+**Monthly Expenses Tracker (Web)** is a **Flask-based web application** that provides a modern admin dashboard for managing monthly budgets.
+It is a full migration of the original Python CLI tool into a browser-based interface — no databases or external services required.
 
 This project demonstrates:
-- Python fundamentals
+- Flask web application structure (Blueprint, app factory pattern)
+- Jinja2 templating with a shared base layout
 - File-based data persistence (JSON)
-- Command-line application design
+- Separation of concerns: routes, data logic, templates, and static assets
 
 ---
 
 ## ✨ Features
 
-- Track monthly income (salary)
-- Add, categorize, and store expenses
-- Calculate total expenses and remaining balance
-- Persistent local storage using JSON files
-- Lightweight
+- 📊 Live dashboard with stat cards and a spending doughnut chart
+- ➕ Add, edit, and delete expenses via modal forms
+- 🗂️ Category-based spending breakdown with progress bars
+- 💰 Savings rate calculation
+- 📥 Export full summary to CSV
+- ⚙️ Settings page to update salary and reset all data
+- 🎨 Dark theme UI with no external CSS framework dependencies
 
 ---
 
 ## 🧰 Tech Stack Used
 
-- **Programming Language:** Python
-- **Application Type:** Command-Line Interface (CLI)
+- **Backend:** Python, Flask 3.0+
+- **Templating:** Jinja2
+- **Frontend:** HTML5, CSS3, Vanilla JavaScript
+- **Charts:** Chart.js (CDN)
 - **Data Storage:** JSON (local filesystem)
 
 ---
@@ -56,7 +62,6 @@ This project demonstrates:
 ### 🛠️ Prerequisites
 - Python 3.8+ installed
 
-
 ### 📦 Installation
 
 ```bash
@@ -64,25 +69,29 @@ git clone https://github.com/NHasan143/monthly-expenses-tracker.git
 cd monthly-expenses-tracker
 python -m venv .venv
 source .venv/bin/activate
-
+pip install -r requirements.txt
 ```
-
 
 ---
 
 ## ▶️ Usage
 
-Run the script:
+Run the development server:
 
 ```bash
-python ExpensesTracker.py
+python run.py
 ```
 
-Follow the prompts to:
-- Enter salary
-- Add expenses
-- Modify Expenses
-- View summary (spent + remaining)
+Then open your browser and go to:
+
+```
+http://localhost:5000
+```
+
+> ⚠️ If port 5000 is in use change the port in `run.py`:
+> ```python
+> app.run(debug=True, port=5001)
+> ```
 
 ---
 
@@ -90,37 +99,62 @@ Follow the prompts to:
 
 ```text
 monthly-expenses-tracker/
-├─ ExpensesTracker.py
-├─ README.md
-└─ (data files: *.json)
+├── run.py                        # App entry point
+├── requirements.txt              # Python dependencies
+├── budget_data.json              # Local data storage (auto-created)
+└── app/
+    ├── __init__.py               # Flask app factory
+    ├── routes.py                 # All URL routes (Blueprint)
+    ├── data.py                   # Data logic: load, save, calculate
+    ├── templates/
+    │   ├── base.html             # Shared layout (sidebar, topbar, flash messages)
+    │   ├── dashboard.html        # Stat cards, chart, recent expenses
+    │   ├── expenses.html         # Full expense table with edit/delete
+    │   └── settings.html        # Salary update, CSV export, data reset
+    └── static/
+        ├── css/
+        │   └── main.css          # All styles (variables, layout, components)
+        └── js/
+            ├── modals.js         # Shared modal open/close logic
+            ├── dashboard.js      # Chart.js doughnut chart
+            └── expenses.js       # Edit modal population
 ```
 
 ---
 
 ## 💾 Data Storage
 
-This project uses JSON files to store income and expenses locally.  
-All financial data is stored using JSON files, making the application:
+This project uses a local JSON file (`budget_data.json`) to store income and expenses.
+All financial data is kept on your machine, making the application:
 
-- Easy to reset
-- Transparent
-- Suitable for offline use
+- Easy to reset (delete the JSON file and restart)
+- Transparent and portable
+- Suitable for fully offline use
 
-To reset all data, simply delete the JSON files and restart the program.
+---
+
+## 📄 Pages
+
+| Route | Page | Description |
+|---|---|---|
+| `/` | Dashboard | Overview with stats, chart, and recent expenses |
+| `/expenses` | Expenses | Full table with add, edit, and delete |
+| `/settings` | Settings | Update salary, export CSV, reset all data |
+| `/export` | — | Downloads `budget_export.csv` directly |
 
 ---
 
 ## 🔮 Roadmap & Future Enhancements
 
-- [Added] Add categories for expenses (e.g., Food, Transport, Utilities).
-
-- [Added] Add the ability to delete specific expenses.
-
-- [Added] Export summary to a .csv or .txt file.
-
-- [Working] Visualize spending with a pie chart.
-
-- [ ] Add a web interface dashboard
+- [Added] Flask web interface dashboard
+- [Added] Spending breakdown by category with chart
+- [Added] Edit existing expenses
+- [Added] Export summary to CSV
+- [Added] Savings rate calculation
+- [ ] User authentication (login/logout)
+- [ ] Monthly history (track across multiple months)
+- [ ] Mobile responsive layout
+- [ ] Dark/light theme toggle
 
 ---
 
@@ -128,11 +162,11 @@ To reset all data, simply delete the JSON files and restart the program.
 
 Contributions are welcome.
 
-1. Fork the repo  
-2. Create a branch: `git checkout -b feature/my-change`  
-3. Commit changes: `git commit -m "Add my change"`  
-4. Push: `git push origin feature/my-change`  
-5. Open a Pull Request  
+1. Fork the repo
+2. Create a branch: `git checkout -b feature/my-change`
+3. Commit changes: `git commit -m "Add my change"`
+4. Push: `git push origin feature/my-change`
+5. Open a Pull Request
 
 ---
 
@@ -144,6 +178,5 @@ Licensed under the MIT License. See [LICENSE](./LICENSE).
 
 ## 👤 Author
 
-**Naymul Hasan**  
+**Naymul Hasan**
 GitHub: https://github.com/NHasan143
-
