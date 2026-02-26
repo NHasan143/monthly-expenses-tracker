@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings — Budget Tracker{% endblock %}
+{% block page_title %}Settings{% endblock %}
+
+{% block content %}
+
+<div style="max-width: 580px; display: flex; flex-direction: column; gap: 20px;">
+
+  <!-- ── Update Salary ─────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-title">Monthly Salary</div>
+    <p class="text-muted text-sm mb-4" style="margin-bottom: 20px;">
+      Set your monthly income. This is used to calculate your remaining balance and savings rate.
+    </p>
+    <form method="POST" action="{{ url_for('main.update_salary') }}">
+      <div class="form-group">
+        <label class="form-label">Salary Amount ($)</label>
+        <input
+          class="form-input"
+          name="salary"
+          type="number"
+          step="0.01"
+          min="0"
+          value="{{ '%.2f'|format(data.salary) }}"
+          required
+        />
+      </div>
+      <button type="submit" class="btn btn-primary">Update Salary</button>
+    </form>
+  </div>
+
+  <!-- ── Data Management ───────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-title">Export Data</div>
+    <p class="text-muted text-sm" style="margin-bottom: 20px;">
+      Download all your expenses and summary as a CSV file.
+    </p>
+    <a href="{{ url_for('main.export_csv') }}" class="btn btn-ghost">↓ Download CSV</a>
+  </div>
+
+  <!-- ── Danger Zone ───────────────────────────────────────────── -->
+  <div class="card" style="border-color: rgba(248,81,73,0.3);">
+    <div class="card-title" style="color: var(--danger);">Danger Zone</div>
+    <p class="text-muted text-sm" style="margin-bottom: 20px;">
+      Permanently delete all budget data including salary and all expenses.
+      <strong style="color: var(--text);">This cannot be undone.</strong>
+    </p>
+    <button class="btn btn-danger" onclick="openModal('resetModal')">Reset All Data</button>
+  </div>
+
+</div>
+
+<!-- ── Reset Confirm Modal ────────────────────────────────────── -->
+<div class="modal-overlay" id="resetModal">
+  <div class="modal">
+    <div class="modal-title" style="color: var(--danger);">⚠ Confirm Reset</div>
+    <p class="text-muted text-sm" style="margin-bottom: 20px; line-height: 1.7;">
+      This will permanently delete your salary and all
+      <strong style="color:var(--text);">{{ data.expenses|length }} expense record{{ 's' if data.expenses|length != 1 }}</strong>.
+      Type <code style="background:var(--surface2); padding: 2px 6px; border-radius:4px; color:var(--danger);">RESET</code> below to confirm.
+    </p>
+    <form method="POST" action="{{ url_for('main.reset') }}">
+      <div class="form-group">
+        <input
+          class="form-input"
+          name="confirm"
+          placeholder="Type RESET to confirm"
+          autocomplete="off"
+          style="border-color: rgba(248,81,73,0.4);"
+        />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="closeModal('resetModal')">Cancel</button>
+        <button type="submit" class="btn btn-danger">Delete Everything</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}{% endblock %}

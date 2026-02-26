@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard — Budget Tracker{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block topbar_actions %}
+  <a href="{{ url_for('main.export_csv') }}" class="btn btn-ghost btn-sm">↓ Export CSV</a>
+  <button class="btn btn-primary btn-sm" onclick="openModal('addExpenseModal')">+ Add Expense</button>
+{% endblock %}
+
+{% block content %}
+
+<!-- ── Stat Cards ──────────────────────────────────────────────── -->
+<div class="stat-grid">
+  <div class="stat-card green">
+    <div class="stat-label">Monthly Salary</div>
+    <div class="stat-value green">${{ "%.2f"|format(data.salary) }}</div>
+    <div class="stat-sub">Total income this month</div>
+  </div>
+
+  <div class="stat-card red">
+    <div class="stat-label">Total Expenses</div>
+    <div class="stat-value red">${{ "%.2f"|format(total_expenses) }}</div>
+    <div class="stat-sub">{{ data.expenses|length }} transaction{{ 's' if data.expenses|length != 1 }}</div>
+  </div>
+
+  <div class="stat-card {{ 'green' if balance >= 0 else 'red' }}">
+    <div class="stat-label">Remaining Balance</div>
+    <div class="stat-value {{ 'green' if balance >= 0 else 'red' }}">${{ "%.2f"|format(balance) }}</div>
+    <div class="stat-sub">{{ 'Positive balance' if balance >= 0 else 'Over budget!' }}</div>
+  </div>
+
+  <div class="stat-card {{ 'green' if savings_rate >= 20 else 'yellow' if savings_rate > 0 else 'red' }}">
+    <div class="stat-label">Savings Rate</div>
+    <div class="stat-value {{ 'green' if savings_rate >= 20 else 'yellow' if savings_rate > 0 else 'red' }}">{{ savings_rate }}%</div>
+    <div class="stat-sub">{{ 'Great job!' if savings_rate >= 20 else 'Room to improve' if savings_rate > 0 else 'No savings' }}</div>
+  </div>
+</div>
+
+<!-- ── Chart + Category Breakdown ─────────────────────────────── -->
+<div class="two-col mb-6">
+  <div class="card">
+    <div class="card-title">Spending Breakdown</div>
+    {% if data.expenses %}
+      <div style="position:relative; height: 280px;">
+        <canvas id="expenseChart"></canvas>
+      </div>
+    {% else %}
+      <div style="height:280px; display:flex; align-items:center; justify-content:center; color: var(--text-muted); font-size:14px;">
+        No expenses recorded yet.
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card-title">By Category</div>
+    {% if category_totals %}
+      <div style="display:flex; flex-direction:column; gap: 14px; margin-top: 4px;">
+        {% set max_val = category_totals.values()|list|max %}
+        {% set colors = ['#3bdf91','#58a6ff','#e3b341','#f85149','#bc8cff','#79c0ff'] %}
+        {% for cat, amount in category_totals.items() %}
+          {% set pct = (amount / data.salary * 100) if data.salary > 0 else 0 %}
+          {% set bar_pct = (amount / max_val * 100) %}
+          {% set color = colors[loop.index0 % colors|length] %}
+          <div>
+            <div class="flex justify-between items-center mb-4" style="margin-bottom: 6px;">
+              <span style="font-size:14px;">{{ cat }}</span>
+              <span style="font-size:14px; font-weight:600;">${{ "%.2f"|format(amount) }}</span>
+            </div>
+            <div style="height:6px; background: var(--surface2); border-radius: 3px; overflow:hidden;">
+              <div style="width:{{ bar_pct }}%; height:100%; background:{{ color }}; border-radius:3px; transition: width 0.6s ease;"></div>
+            </div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:3px;">{{ "%.1f"|format(pct) }}% of salary</div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="color: var(--text-muted); font-size:14px; margin-top: 8px;">No categories yet.</div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- ── Recent Expenses Table ───────────────────────────────────── -->
+<div class="card">
+  <div class="flex justify-between items-center mb-6" style="margin-bottom: 16px;">
+    <div class="card-title" style="margin-bottom:0;">Recent Expenses</div>
+    <a href="{{ url_for('main.expenses') }}" class="text-sm text-muted" style="text-decoration:none; color: var(--accent);">View all →</a>
+  </div>
+
+  {% if data.expenses %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Category</th>
+          <th style="text-align:right;">Amount</th>
+          <th style="text-align:right;">% of Income</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% set colors = ['#3bdf91','#58a6ff','#e3b341','#f85149','#bc8cff','#79c0ff'] %}
+        {% set cats = category_totals.keys()|list %}
+        {% for expense in data.expenses[-5:]|reverse %}
+          {% set cat_idx = cats.index(expense.category) if expense.category in cats else 0 %}
+          {% set color = colors[cat_idx % colors|length] %}
+          {% set pct = (expense.amount / data.salary * 100) if data.salary > 0 else 0 %}
+          <tr>
+            <td>{{ expense.description }}</td>
+            <td>
+              <span class="badge" style="background: {{ color }}22; color: {{ color }};">
+                {{ expense.category }}
+              </span>
+            </td>
+            <td style="text-align:right; font-family:'Syne',sans-serif; font-weight:700;">${{ "%.2f"|format(expense.amount) }}</td>
+            <td style="text-align:right; color: var(--text-muted); font-size:13px;">{{ "%.1f"|format(pct) }}%</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <div style="text-align:center; padding: 40px 0; color: var(--text-muted); font-size:14px;">
+      No expenses yet. Add your first one above.
+    </div>
+  {% endif %}
+</div>
+
+<!-- ── Add Expense Modal ───────────────────────────────────────── -->
+<div class="modal-overlay" id="addExpenseModal">
+  <div class="modal">
+    <div class="modal-title">Add New Expense</div>
+    <form method="POST" action="{{ url_for('main.add_expense') }}">
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <input class="form-input" name="description" placeholder="e.g. Monthly rent" required autofocus />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <input class="form-input" name="category" placeholder="e.g. Housing" list="category-suggestions" required />
+        <datalist id="category-suggestions">
+          {% for cat in category_totals.keys() %}
+            <option value="{{ cat }}">
+          {% endfor %}
+        </datalist>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Amount ($)</label>
+        <input class="form-input" name="amount" type="number" step="0.01" min="0.01" placeholder="0.00" required />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="closeModal('addExpenseModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Add Expense</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+  {# Pass Jinja data to dashboard.js via a single window variable #}
+  {% if data.expenses %}
+  <script>window.CATEGORY_DATA = {{ category_totals_json|safe }};</script>
+  {% endif %}
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}
