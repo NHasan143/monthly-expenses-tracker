@@ -1,3 +1,4 @@
+# You can simply overlook this file if you are running the flask app. This file is only for running the console-based expenses tracker application.
 import os
 import json
 import csv
