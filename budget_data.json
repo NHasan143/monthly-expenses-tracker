@@ -1,11 +1,6 @@
 {
-    "salary": 10000.0,
+    "salary": 11000.0,
     "expenses": [
-        {
-            "description": "House Rent and accomodation",
-            "amount": 3500.0,
-            "category": "Accomodation"
-        },
         {
             "description": "Food and Groceries",
             "amount": 3000.0,
@@ -24,7 +19,12 @@
         {
             "description": "Pocket money and other minor stuff",
             "amount": 300.0,
-            "category": "Pocket money"
+            "category": "Pocket Money"
+        },
+        {
+            "description": "Coffee",
+            "category": "Food",
+            "amount": 4.5
         }
     ]
 }
