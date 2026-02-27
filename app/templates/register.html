@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register — Budget Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+</head>
+<body class="auth-body">
+
+  <div class="auth-wrapper">
+
+    <!-- Brand -->
+    <div class="auth-brand">
+      <div class="auth-logo">💰</div>
+      <h1 class="auth-app-name">Budget Tracker</h1>
+      <p class="auth-tagline">Personal Finance Dashboard</p>
+    </div>
+
+    <!-- Card -->
+    <div class="auth-card">
+      <h2 class="auth-title">Create an account</h2>
+      <p class="auth-subtitle">Start tracking your expenses today</p>
+
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">
+              {{ '✓' if category == 'success' else '✕' }} {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" action="{{ url_for('auth.register') }}" novalidate>
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input
+            class="form-input"
+            type="text"
+            name="username"
+            placeholder="e.g. naymul"
+            value="{{ request.form.get('username', '') }}"
+            required
+            autofocus
+          />
+          <span class="form-hint">At least 3 characters</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input
+            class="form-input"
+            type="email"
+            name="email"
+            placeholder="you@example.com"
+            value="{{ request.form.get('email', '') }}"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input
+            class="form-input"
+            type="password"
+            name="password"
+            placeholder="••••••••"
+            required
+          />
+          <span class="form-hint">At least 6 characters</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Confirm Password</label>
+          <input
+            class="form-input"
+            type="password"
+            name="confirm_password"
+            placeholder="••••••••"
+            required
+          />
+        </div>
+
+        <button type="submit" class="btn btn-primary auth-submit">
+          Create Account
+        </button>
+      </form>
+
+      <p class="auth-switch">
+        Already have an account?
+        <a href="{{ url_for('auth.login') }}">Sign in</a>
+      </p>
+    </div>
+
+  </div>
+
+</body>
+</html>

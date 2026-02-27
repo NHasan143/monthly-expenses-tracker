@@ -2,7 +2,12 @@ import csv
 import io
 import json
 from flask import Blueprint, render_template, request, redirect, url_for, flash, send_file
-from .data import load_data, save_data, calculate_balance, get_category_totals, reset_data
+from flask_login import login_required, current_user
+from .data import (
+    load_data, save_salary, add_expense as db_add_expense,
+    delete_expense_by_index, edit_expense_by_index,
+    calculate_balance, get_category_totals, reset_data
+)
 
 main = Blueprint('main', __name__)
 
@@ -10,12 +15,13 @@ main = Blueprint('main', __name__)
 # ── Dashboard ─────────────────────────────────────────────────────────────────
 
 @main.route('/')
+@login_required
 def dashboard():
-    data = load_data()
-    balance = calculate_balance(data['salary'], data['expenses'])
+    data           = load_data(current_user.id)
+    balance        = calculate_balance(data['salary'], data['expenses'])
     category_totals = get_category_totals(data['expenses'])
     total_expenses = sum(e['amount'] for e in data['expenses'])
-    savings_rate = round((balance / data['salary'] * 100), 1) if data['salary'] > 0 else 0
+    savings_rate   = round((balance / data['salary'] * 100), 1) if data['salary'] > 0 else 0
     return render_template(
         'dashboard.html',
         data=data,
@@ -27,22 +33,24 @@ def dashboard():
     )
 
 
-# ── Expenses ───────────────────────────────────────────────────────────────────
+# ── Expenses ──────────────────────────────────────────────────────────────────
 
 @main.route('/expenses')
+@login_required
 def expenses():
-    data = load_data()
-    balance = calculate_balance(data['salary'], data['expenses'])
+    data           = load_data(current_user.id)
+    balance        = calculate_balance(data['salary'], data['expenses'])
     total_expenses = sum(e['amount'] for e in data['expenses'])
-    return render_template('expenses.html', data=data, balance=balance, total_expenses=total_expenses)
+    return render_template('expenses.html', data=data, balance=balance,
+                           total_expenses=total_expenses)
 
 
 @main.route('/add', methods=['POST'])
+@login_required
 def add_expense():
-    data = load_data()
     description = request.form.get('description', '').strip()
-    category = request.form.get('category', '').strip()
-    amount_str = request.form.get('amount', '').strip()
+    category    = request.form.get('category', '').strip()
+    amount_str  = request.form.get('amount', '').strip()
 
     if not description:
         flash('Description is required.', 'error')
@@ -59,22 +67,16 @@ def add_expense():
         flash('Please enter a valid positive amount.', 'error')
         return redirect(request.referrer or url_for('main.dashboard'))
 
-    data['expenses'].append({
-        'description': description,
-        'category': category,
-        'amount': amount
-    })
-    save_data(data)
+    db_add_expense(current_user.id, description, category, amount)
     flash(f'Expense "{description}" added successfully.', 'success')
     return redirect(request.referrer or url_for('main.dashboard'))
 
 
 @main.route('/delete/<int:index>', methods=['POST'])
+@login_required
 def delete_expense(index):
-    data = load_data()
-    if 0 <= index < len(data['expenses']):
-        removed = data['expenses'].pop(index)
-        save_data(data)
+    removed = delete_expense_by_index(current_user.id, index)
+    if removed:
         flash(f'"{removed["description"]}" deleted.', 'success')
     else:
         flash('Expense not found.', 'error')
@@ -82,15 +84,11 @@ def delete_expense(index):
 
 
 @main.route('/edit/<int:index>', methods=['POST'])
+@login_required
 def edit_expense(index):
-    data = load_data()
-    if not (0 <= index < len(data['expenses'])):
-        flash('Expense not found.', 'error')
-        return redirect(url_for('main.expenses'))
-
     description = request.form.get('description', '').strip()
-    category = request.form.get('category', '').strip()
-    amount_str = request.form.get('amount', '').strip()
+    category    = request.form.get('category', '').strip()
+    amount_str  = request.form.get('amount', '').strip()
 
     if not description or not category:
         flash('Description and category are required.', 'error')
@@ -104,33 +102,31 @@ def edit_expense(index):
         flash('Please enter a valid positive amount.', 'error')
         return redirect(url_for('main.expenses'))
 
-    data['expenses'][index] = {
-        'description': description,
-        'category': category,
-        'amount': amount
-    }
-    save_data(data)
-    flash('Expense updated successfully.', 'success')
+    success = edit_expense_by_index(current_user.id, index, description, category, amount)
+    if success:
+        flash('Expense updated successfully.', 'success')
+    else:
+        flash('Expense not found.', 'error')
     return redirect(url_for('main.expenses'))
 
 
 # ── Settings ──────────────────────────────────────────────────────────────────
 
 @main.route('/settings')
+@login_required
 def settings():
-    data = load_data()
+    data = load_data(current_user.id)
     return render_template('settings.html', data=data)
 
 
 @main.route('/update-salary', methods=['POST'])
+@login_required
 def update_salary():
-    data = load_data()
     try:
         salary = float(request.form.get('salary', 0))
         if salary < 0:
             raise ValueError
-        data['salary'] = salary
-        save_data(data)
+        save_salary(current_user.id, salary)
         flash('Salary updated successfully.', 'success')
     except ValueError:
         flash('Please enter a valid salary.', 'error')
@@ -138,10 +134,11 @@ def update_salary():
 
 
 @main.route('/reset', methods=['POST'])
+@login_required
 def reset():
     confirm = request.form.get('confirm', '').strip()
     if confirm == 'RESET':
-        reset_data()
+        reset_data(current_user.id)
         flash('All data has been reset.', 'success')
     else:
         flash('Type RESET exactly to confirm.', 'error')
@@ -151,20 +148,22 @@ def reset():
 # ── Export ────────────────────────────────────────────────────────────────────
 
 @main.route('/export')
+@login_required
 def export_csv():
-    data = load_data()
-    total = sum(e['amount'] for e in data['expenses'])
+    data    = load_data(current_user.id)
+    total   = sum(e['amount'] for e in data['expenses'])
     balance = calculate_balance(data['salary'], data['expenses'])
 
     output = io.StringIO()
     writer = csv.writer(output)
     writer.writerow(['Description', 'Category', 'Amount'])
     for e in data['expenses']:
-        writer.writerow([e['description'], e.get('category', 'Uncategorized'), f"{e['amount']:.2f}"])
+        writer.writerow([e['description'], e.get('category', 'Uncategorized'),
+                         f"{e['amount']:.2f}"])
     writer.writerow([])
     writer.writerow(['--- SUMMARY ---', '', ''])
-    writer.writerow(['Monthly Salary', '', f"{data['salary']:.2f}"])
-    writer.writerow(['Total Expenses', '', f"{total:.2f}"])
+    writer.writerow(['Monthly Salary',    '', f"{data['salary']:.2f}"])
+    writer.writerow(['Total Expenses',    '', f"{total:.2f}"])
     writer.writerow(['Remaining Balance', '', f"{balance:.2f}"])
 
     output.seek(0)
