@@ -53,7 +53,18 @@
 
     <header class="topbar">
       <div class="topbar-title">{% block page_title %}{% endblock %}</div>
-      <div class="topbar-actions">{% block topbar_actions %}{% endblock %}</div>
+      <div class="topbar-actions">
+        {% block topbar_actions %}{% endblock %}
+
+        <!-- User info + logout — shown on every page -->
+        {% if current_user.is_authenticated %}
+        <div class="topbar-user">
+          <div class="user-avatar">{{ current_user.username[0].upper() }}</div>
+          <span class="user-name">{{ current_user.username }}</span>
+        </div>
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-ghost btn-sm">Sign Out</a>
+        {% endif %}
+      </div>
     </header>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
