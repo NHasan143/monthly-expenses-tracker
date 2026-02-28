@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           borderWidth: 2,
           borderColor: '#161b22',  // matches --surface CSS variable (dark background)
-          hoverOffset: 6           // slices pop outward slightly when hovered
+          hoverOffset: 12           // slices pop outward slightly when hovered
         }]
       },
       options: {
@@ -69,8 +69,10 @@ document.addEventListener('DOMContentLoaded', () => {
               color: '#8b949e',                    // --text-muted
               font: { family: 'DM Sans', size: 12 },
               padding: 16,
-              usePointStyle: true,                 // circle dots instead of square boxes
-              pointStyleWidth: 8
+              usePointStyle: true,
+              pointStyle: 'circle',
+              boxWidth: 10,
+              boxHeight: 10,
             }
           },
 
@@ -278,6 +280,59 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   // ── End Confetti Burst ────────────────────────────────────────────────────
+
+  // ── 5. STAT CARD HOVER EFFECTS ────────────────────────────────────────────
+// Adds a lift + glow hover effect to each stat card dynamically.
+// Each card type (green, red, yellow) gets its own matching glow color
+// so the effect feels cohesive with the card's accent color.
+//
+// We use mouseenter/mouseleave instead of CSS :hover so the effect
+// is fully controlled by JavaScript — easier to adjust or extend later.
+//
+// Effects applied on hover:
+//   - Card lifts up 4px (translateY)
+//   - Border brightens to accent color
+//   - Background lightens slightly
+//   - Colored box shadow appears below + glow ring around border
+
+// Define glow colors matching each card type
+const glowColors = {
+  green:  'rgba(59, 223, 145, 0.15)',   // --accent green
+  red:    'rgba(248, 81, 73, 0.15)',    // --danger red
+  yellow: 'rgba(227, 179, 65, 0.15)',   // --warning yellow
+};
+
+const borderColors = {
+  green:  'rgba(59, 223, 145, 0.5)',
+  red:    'rgba(248, 81, 73, 0.5)',
+  yellow: 'rgba(227, 179, 65, 0.5)',
+};
+
+document.querySelectorAll('.stat-card').forEach(card => {
+
+  // Detect which color type this card is (green, red, or yellow)
+  const type = ['green', 'red', 'yellow'].find(t => card.classList.contains(t)) || 'green';
+
+  // Set the base transition on the card so all property changes animate smoothly
+  card.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background 0.3s ease';
+
+  // ── Mouse enters the card ──
+  card.addEventListener('mouseenter', () => {
+    card.style.transform   = 'translateY(-4px)';                    // lift up
+    card.style.background  = 'var(--surface2)';                     // lighten background
+    card.style.borderColor = borderColors[type];                    // brighten border
+    card.style.boxShadow   = `0 8px 30px ${glowColors[type]}, 0 0 0 1px ${borderColors[type]}`; // glow
+  });
+
+  // ── Mouse leaves the card ──
+  card.addEventListener('mouseleave', () => {
+    card.style.transform   = 'translateY(0)';                       // return to normal
+    card.style.background  = 'var(--surface)';                      // restore background
+    card.style.borderColor = 'var(--border)';                       // restore border
+    card.style.boxShadow   = 'none';                                // remove glow
+  });
+});
+// ── End Stat Card Hover Effects ───────────────────────────────────────────
 
 
 }); // End DOMContentLoaded

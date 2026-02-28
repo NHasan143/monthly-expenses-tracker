@@ -124,5 +124,50 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   // ── End Amount Hover Pulse ──────────────────────────────────────────────────
 
+// ── 4. STAT CARD HOVER EFFECTS ────────────────────────────────────────────
+// Same hover effect as the dashboard page — lifts each stat card on hover
+// with a colored glow matching the card's accent type (green, red, yellow).
+//
+// The expenses page has 3 stat cards: Monthly Salary, Total Spent, Balance.
+// Each gets its own glow color matching its class (green, red, or dynamic).
+
+// Define glow colors matching each card type
+const glowColors = {
+  green:  'rgba(59, 223, 145, 0.15)',  // --accent green
+  red:    'rgba(248, 81, 73, 0.15)',   // --danger red
+  yellow: 'rgba(227, 179, 65, 0.15)', // --warning yellow
+};
+
+const borderColors = {
+  green:  'rgba(59, 223, 145, 0.5)',
+  red:    'rgba(248, 81, 73, 0.5)',
+  yellow: 'rgba(227, 179, 65, 0.5)',
+};
+
+document.querySelectorAll('.stat-card').forEach(card => {
+
+  // Detect which color type this card is (green, red, or yellow)
+  const type = ['green', 'red', 'yellow'].find(t => card.classList.contains(t)) || 'green';
+
+  // Set base transition so all property changes animate smoothly
+  card.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background 0.3s ease';
+
+  // ── Mouse enters the card ──
+  card.addEventListener('mouseenter', () => {
+    card.style.transform   = 'translateY(-4px)';                                                 // lift up
+    card.style.background  = 'var(--surface2)';                                                  // lighten background
+    card.style.borderColor = borderColors[type];                                                 // brighten border
+    card.style.boxShadow   = `0 8px 30px ${glowColors[type]}, 0 0 0 1px ${borderColors[type]}`; // glow
+  });
+
+  // ── Mouse leaves the card ──
+  card.addEventListener('mouseleave', () => {
+    card.style.transform   = 'translateY(0)';       // return to normal position
+    card.style.background  = 'var(--surface)';      // restore original background
+    card.style.borderColor = 'var(--border)';       // restore original border
+    card.style.boxShadow   = 'none';                // remove glow
+  });
+});
+// ── End Stat Card Hover Effects ───────────────────────────────────────────
 
 }); // End DOMContentLoaded
