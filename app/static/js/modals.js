@@ -201,6 +201,95 @@ function toggleTheme() {
   localStorage.setItem('theme', isLight ? 'light' : 'dark');
 }
 
+// ── 9. CLICK RIPPLE + PARTICLE BURST ─────────────────────────────────────────
+// On every click, two effects fire simultaneously from the click point:
+//   1. A ripple ring expands outward and fades — like a water drop
+//   2. 20 small particles explode outward in random directions and shrink away
+//
+// Both are pure CSS + JS — no libraries needed. All elements are created,
+// animated, and removed from the DOM automatically so there's no memory leak.
+// pointer-events: none on everything ensures clicks are never blocked.
+//
+// All 5 app accent colors are used — the ripple and each particle independently
+// pick a random color from the palette on every click.
+
+document.addEventListener('click', e => {
+  const x = e.clientX;
+  const y = e.clientY;
+  const CLICK_COLORS = ['#3bdf91', '#58a6ff', '#e3b341', '#f85149', '#bc8cff'];
+
+  // ── Ripple ring ──────────────────────────────────────────────────────────
+  const rippleColor = CLICK_COLORS[Math.floor(Math.random() * CLICK_COLORS.length)];
+  const ripple = document.createElement('div');
+  ripple.style.cssText = `
+    position: fixed;
+    left: ${x}px;
+    top: ${y}px;
+    width: 0px;
+    height: 0px;
+    border-radius: 50%;
+    border: 2px solid ${rippleColor};
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 9998;
+    animation: rippleExpand 0.6s ease-out forwards;
+  `;
+  document.body.appendChild(ripple);
+  setTimeout(() => ripple.remove(), 600);
+
+  // ── Particle burst ───────────────────────────────────────────────────────
+  for (let i = 0; i < 20; i++) {
+    const particle = document.createElement('div');
+    const color    = CLICK_COLORS[Math.floor(Math.random() * CLICK_COLORS.length)];
+    const size     = Math.random() * 6+3;          // 3px – 9px
+    const angle    = Math.random() * 360;             // random direction
+    const distance = Math.random() * 40 + 20;        // 40px – 120px spread
+    const tx       = Math.cos(angle * Math.PI / 180) * distance;
+    const ty       = Math.sin(angle * Math.PI / 180) * distance;
+    const duration = Math.random() * 400 + 500;      // 500ms – 900ms
+
+    particle.style.cssText = `
+      position: fixed;
+      left: ${x}px;
+      top: ${y}px;
+      width: ${size}px;
+      height: ${size}px;
+      border-radius: 50%;
+      background: ${color};
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 9998;
+      animation: particleFly ${duration}ms ease-out forwards;
+      --tx: ${tx}px;
+      --ty: ${ty}px;
+    `;
+    document.body.appendChild(particle);
+    setTimeout(() => particle.remove(), duration);
+  }
+});
+
+// ── Keyframes ─────────────────────────────────────────────────────────────────
+const clickEffectStyle = document.createElement('style');
+clickEffectStyle.textContent = `
+  @keyframes rippleExpand {
+    to {
+      width: 120px;
+      height: 120px;
+      opacity: 0;
+    }
+  }
+  @keyframes particleFly {
+    to {
+      transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty)));
+      opacity: 0;
+      width: 0px;
+      height: 0px;
+    }
+  }
+`;
+document.head.appendChild(clickEffectStyle);
+// ── End Click Ripple + Particle Burst ─────────────────────────────────────────
+
 // ── Apply saved theme preference on every page load ───────────────────────────
 // Runs immediately (not inside DOMContentLoaded) so the theme is applied
 // as early as possible — prevents a flash of the wrong theme on load.
