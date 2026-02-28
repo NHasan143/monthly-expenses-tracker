@@ -63,6 +63,7 @@
           <div class="user-avatar">{{ current_user.username[0].upper() }}</div>
           <span class="user-name">{{ current_user.username }}</span>
         </div>
+        <button id="themeToggle" class="btn btn-ghost btn-sm" onclick="toggleTheme()">🌙 Dark</button>
         <a href="{{ url_for('auth.logout') }}" class="btn btn-ghost btn-sm">Sign Out</a>
         {% endif %}
       </div>

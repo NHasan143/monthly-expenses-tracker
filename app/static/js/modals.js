@@ -226,5 +226,44 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   // ── End Page Fade Transition ──────────────────────────────────────────────────
 
-
 }); // End DOMContentLoaded
+
+// ── 8. DARK TO LIGHT MODE TRANSITION ───────────────────────────────────────────
+// Toggles between dark mode (default) and light mode by adding/removing
+// the 'light-mode' class on the <body> element.
+//
+// The user's preference is saved to localStorage so it persists across
+// page refreshes and navigation — they won't have to toggle every time.
+//
+// The button label and emoji update to reflect the current mode:
+//   🌙 Dark  — currently in dark mode  (click to switch to light)
+//   ☀️ Light — currently in light mode (click to switch to dark)
+
+function toggleTheme() {
+  const body    = document.body;
+  const btn     = document.getElementById('themeToggle');
+  const isLight = body.classList.toggle('light-mode'); // toggle and check new state
+
+  // Update button label to reflect the CURRENT active mode
+  btn.textContent = isLight ? '☀️ Light' : '🌙 Dark';
+
+  // Save preference to localStorage so it survives page navigation
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+}
+
+// ── Apply saved theme preference on every page load ───────────────────────────
+// Runs immediately (not inside DOMContentLoaded) so the theme is applied
+// as early as possible — prevents a flash of the wrong theme on load.
+(function applyStoredTheme() {
+  const saved = localStorage.getItem('theme');
+  if (saved === 'light') {
+    document.body.classList.add('light-mode');
+
+    // Wait for the DOM to be ready before updating the button label
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('themeToggle');
+      if (btn) btn.textContent = '☀️ Light';
+    });
+  }
+})();
+// ── End Dark / Light Mode Toggle ──────────────────────────────────────────────

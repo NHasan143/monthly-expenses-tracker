@@ -28,6 +28,85 @@ html, body {
 /* ── Layout ─────────────────────────────────────────────────── */
 .layout { display: flex; min-height: 100vh; }
 
+/* ── Light Mode Theme ───────────────────────────────────────── */
+body.light-mode {
+  --bg:        #f5f7fa;
+  --surface:   #ffffff;
+  --surface2:  #eef0f4;
+  --border:    #d0d7de;
+  --accent:    #1a9e5e;
+  --accent-dim:#d0f0e0;
+  --danger:    #d93025;
+  --warning:   #b08000;
+  --text:      #1a1f2e;
+  --text-muted:#57606a;
+}
+
+/* ── Force html and body background to update ───────────────── */
+/* html sits above body so it needs its own explicit override    */
+body.light-mode,
+body.light-mode html {
+  background: #f5f7fa;
+  color: #1a1f2e;
+}
+
+/* ── Layout wrappers ────────────────────────────────────────── */
+body.light-mode .layout        { background: #f5f7fa; }
+body.light-mode .main          { background: #f5f7fa; }
+body.light-mode .page-content  { background: #f5f7fa; }
+
+/* ── Sidebar ────────────────────────────────────────────────── */
+body.light-mode .sidebar       { background: #ffffff; border-color: #d0d7de; }
+body.light-mode .sidebar-brand h1 { color: #1a1f2e; }
+body.light-mode .sidebar-brand span { color: #57606a; }
+body.light-mode .sidebar-nav a { color: #57606a; }
+body.light-mode .sidebar-nav a:hover,
+body.light-mode .sidebar-nav a.active { background: #eef0f4; color: #1a1f2e; }
+
+/* ── Topbar ─────────────────────────────────────────────────── */
+body.light-mode .topbar        { background: #f5f7fa; border-color: #d0d7de; }
+body.light-mode .topbar-title  { color: #1a1f2e; }
+body.light-mode .topbar-user   { background: #eef0f4; border-color: #d0d7de; }
+body.light-mode .user-name     { color: #1a1f2e; }
+
+/* ── Cards ──────────────────────────────────────────────────── */
+body.light-mode .card          { background: #ffffff; border-color: #d0d7de; }
+body.light-mode .card-title    { color: #57606a; }
+body.light-mode .stat-card     { background: #ffffff; border-color: #d0d7de; }
+
+/* ── Table ──────────────────────────────────────────────────── */
+body.light-mode table          { background: #ffffff; }
+body.light-mode thead th       { color: #57606a; border-color: #d0d7de; }
+body.light-mode tbody tr       { border-color: #d0d7de; }
+body.light-mode tbody tr:hover { background: #eef0f4; }
+body.light-mode td             { color: #1a1f2e; }
+
+/* ── Buttons ────────────────────────────────────────────────── */
+body.light-mode .btn-ghost     { color: #57606a; border-color: #d0d7de; }
+body.light-mode .btn-ghost:hover { background: #eef0f4; color: #1a1f2e; }
+
+/* ── Forms ──────────────────────────────────────────────────── */
+body.light-mode .form-input    { background: #eef0f4; border-color: #d0d7de; color: #1a1f2e; }
+body.light-mode .form-label    { color: #57606a; }
+
+/* ── Modals ─────────────────────────────────────────────────── */
+body.light-mode .modal         { background: #ffffff; border-color: #d0d7de; }
+body.light-mode .modal-title   { color: #1a1f2e; }
+body.light-mode .modal-overlay { background: rgba(0, 0, 0, 0.4); }
+
+/* ── Flash messages ─────────────────────────────────────────── */
+body.light-mode .flash.success { background: rgba(26,158,94,0.1);  border-color: rgba(26,158,94,0.3);  color: #1a9e5e; }
+body.light-mode .flash.error   { background: rgba(217,48,37,0.1);  border-color: rgba(217,48,37,0.3);  color: #d93025; }
+
+/* ── Smooth transition on ALL elements when toggling ────────── */
+/* This ensures nothing flashes abruptly when switching modes   */
+body, body * {
+  transition: background 0.3s ease,
+              color 0.3s ease,
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
+}
+
 /* ── Sidebar ────────────────────────────────────────────────── */
 .sidebar {
   width: var(--sidebar-w);
