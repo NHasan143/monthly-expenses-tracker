@@ -57,7 +57,7 @@ html, body {
 }
 
 .sidebar-brand h1 {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 17px;
   font-weight: 800;
   letter-spacing: -0.3px;
@@ -141,7 +141,7 @@ html, body {
 }
 
 .topbar-title {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 20px;
   font-weight: 700;
 }
@@ -195,7 +195,7 @@ html, body {
 }
 
 .card-title {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 13px;
   font-weight: 600;
   text-transform: uppercase;
@@ -246,7 +246,7 @@ html, body {
 }
 
 .stat-value {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 26px;
   font-weight: 800;
   letter-spacing: -0.5px;
@@ -321,6 +321,8 @@ td { padding: 13px 14px; vertical-align: middle; }
   border: none;
   text-decoration: none;
   transition: opacity 0.15s, transform 0.1s;
+  position: relative;
+  overflow: hidden;
 }
 
 .btn:active { transform: scale(0.98); }
@@ -411,7 +413,7 @@ td { padding: 13px 14px; vertical-align: middle; }
 }
 
 .modal-title {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 20px;
@@ -459,7 +461,7 @@ td { padding: 13px 14px; vertical-align: middle; }
   border-radius: 50%;
   background: var(--accent);
   color: #0d1117;
-  font-family: 'Syne', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 12px;
   font-weight: 800;
   display: flex;

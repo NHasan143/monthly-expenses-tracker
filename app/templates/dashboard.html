@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Dashboard — Budget Tracker{% endblock %}
+{% block title %}Dashboard — Your Personal Expenses Tracker{% endblock %}
 {% block page_title %}Dashboard{% endblock %}
 
 {% block topbar_actions %}
@@ -112,7 +112,7 @@
                 {{ expense.category }}
               </span>
             </td>
-            <td style="text-align:right; font-family:'Syne',sans-serif; font-weight:700;">${{ "%.2f"|format(expense.amount) }}</td>
+            <td style="text-align:right; font-family:'Inter',sans-serif; font-weight:700;">${{ "%.2f"|format(expense.amount) }}</td>
             <td style="text-align:right; color: var(--text-muted); font-size:13px;">{{ "%.1f"|format(pct) }}%</td>
           </tr>
         {% endfor %}
@@ -139,9 +139,15 @@
         <label class="form-label">Category</label>
         <input class="form-input" name="category" placeholder="e.g. Housing" list="category-suggestions" required />
         <datalist id="category-suggestions">
-          {% for cat in category_totals.keys() %}
-            <option value="{{ cat }}">
-          {% endfor %}
+          <option value="Accommodation">
+          <option value="Groceries">
+          <option value="Utilities">
+          <option value="Transport">
+          <option value="Entertainment">
+          <option value="Healthcare">
+          <option value="Education">
+          <option value="Pocket Money">
+          <option value="Other">
         </datalist>
       </div>
       <div class="form-group">

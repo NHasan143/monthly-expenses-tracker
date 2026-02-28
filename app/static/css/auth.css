@@ -36,7 +36,7 @@
 }
 
 .auth-app-name {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 22px;
   font-weight: 800;
   letter-spacing: -0.3px;
@@ -59,7 +59,7 @@
 }
 
 .auth-title {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 20px;
   font-weight: 700;
   color: var(--text);

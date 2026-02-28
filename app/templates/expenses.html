@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Expenses — Budget Tracker{% endblock %}
+{% block title %}Expenses — Your Personal Expenses Tracker{% endblock %}
 {% block page_title %}All Expenses{% endblock %}
 
 {% block topbar_actions %}
@@ -101,13 +101,15 @@
         <label class="form-label">Category</label>
         <input class="form-input" name="category" placeholder="e.g. Housing" list="cat-list" required />
         <datalist id="cat-list">
-          {% set seen = [] %}
-          {% for e in data.expenses %}
-            {% if e.category not in seen %}
-              <option value="{{ e.category }}">
-              {% set _ = seen.append(e.category) %}
-            {% endif %}
-          {% endfor %}
+          <option value="Accommodation">
+          <option value="Groceries">
+          <option value="Utilities">
+          <option value="Transport">
+          <option value="Entertainment">
+          <option value="Healthcare">
+          <option value="Education">
+          <option value="Pocket Money">
+          <option value="Other">
         </datalist>
       </div>
       <div class="form-group">
