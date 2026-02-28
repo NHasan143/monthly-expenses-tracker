@@ -176,58 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   // ── End Auto-dismiss Flash ────────────────────────────────────────────────────
 
-
-  // ── 7. SMOOTH PAGE FADE TRANSITION ───────────────────────────────────────────
-  // By default, clicking a navigation link causes a hard instant page reload
-  // which feels abrupt. This enhancement adds a smooth fade-out before navigation
-  // and a fade-in when the new page loads — making the app feel like a SPA
-  // (Single Page Application) even though it's a standard multi-page Flask app.
-  //
-  // How it works:
-  //   FADE IN:  The page starts invisible (opacity:0) and fades to fully visible
-  //             as soon as the browser fires the 'load' event.
-  //
-  //   FADE OUT: When the user clicks an internal navigation link, we:
-  //               1. Prevent the default browser navigation (e.preventDefault)
-  //               2. Fade the page out with a CSS transition (opacity → 0)
-  //               3. After 300ms (when fade is complete), navigate to the new URL
-  //
-  // We exclude links that start with '#' (anchor links on the same page),
-  // and '/export' download links, to avoid interfering with those behaviours.
-
-  // Start the page as invisible — it will fade in once fully loaded
-  document.body.style.opacity = '0';
-  document.body.style.transition = 'opacity 0.3s ease';
-
-  // Fade in once everything (images, fonts, scripts) has loaded
-  window.addEventListener('load', () => {
-    document.body.style.opacity = '1';
-  });
-
-  // Attach fade-out to all internal navigation links
-  document.querySelectorAll('a[href]').forEach(link => {
-    const href = link.getAttribute('href');
-
-    // Skip anchor links, export downloads, external URLs, and _blank links
-    if (
-      !href ||
-      href.startsWith('#') ||
-      href.includes('/export') ||
-      href.startsWith('http') ||        // ← skip all external links
-      link.getAttribute('target') === '_blank'  // ← skip all new-tab links
-    ) return;
-
-    link.addEventListener('click', function (e) {
-      e.preventDefault();
-      const target = this.href;
-      document.body.style.opacity = '0';
-      setTimeout(() => {
-        window.location.href = target;
-      }, 300);
-    });
-  });
-  // ── End Page Fade Transition ──────────────────────────────────────────────────
-
 }); // End DOMContentLoaded
 
 // ── 8. DARK TO LIGHT MODE TRANSITION ───────────────────────────────────────────

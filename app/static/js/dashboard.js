@@ -281,7 +281,62 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   // ── End Confetti Burst ────────────────────────────────────────────────────
 
-  // ── 5. STAT CARD HOVER EFFECTS ────────────────────────────────────────────
+  // ── 5. RECENT EXPENSES TABLE — ROW STAGGER ANIMATION ─────────────────────
+  // When the dashboard loads, each row in the Recent Expenses table slides in
+  // and fades up one after another with a small delay between each row.
+  // This mirrors the exact same cascade entrance effect used on the Expenses
+  // page (expenses.js) so both tables feel consistent across the app.
+  //
+  // We scope the selector to '.card:last-of-type tbody tr' so we only target
+  // the Recent Expenses table and don't accidentally affect other elements.
+  //
+  // How it works:
+  //   - Every <tr> starts invisible and shifted down 20px
+  //   - Each row gets a slightly longer delay than the previous (i * 60ms)
+  //     creating the staggered waterfall effect
+  //   - requestAnimationFrame ensures the browser has painted the initial
+  //     invisible state before triggering the transition to visible
+  const recentRows = document.querySelectorAll('tbody tr');
+
+  recentRows.forEach((row, i) => {
+    row.style.opacity    = '0';
+    row.style.transform  = 'translateY(20px)';
+    row.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+
+    setTimeout(() => {
+      requestAnimationFrame(() => {
+        row.style.opacity   = '1';
+        row.style.transform = 'translateY(0)';
+      });
+    }, 60 + i * 60);
+  });
+
+  // ── 6. RECENT EXPENSES TABLE — AMOUNT HOVER PULSE ────────────────────────
+  // When the user hovers over any row in the Recent Expenses table, the amount
+  // cell briefly scales up and turns red — drawing the eye to the cost.
+  // Mirrors the identical effect from expenses.js for consistency.
+  //
+  // The column index differs from the Expenses page because the dashboard table
+  // has no leading '#' column:
+  //   expenses.html  → # | Description | Category | Amount | Actions → td:nth-child(4)
+  //   dashboard.html → Description | Category | Amount | % of Income → td:nth-child(3)
+  recentRows.forEach(row => {
+    const amountCell = row.querySelector('td:nth-child(3)');
+    if (!amountCell) return;
+
+    row.addEventListener('mouseenter', () => {
+      amountCell.style.transition = 'transform 0.15s ease, color 0.15s ease';
+      amountCell.style.transform  = 'scale(1.15)';
+      amountCell.style.color      = '#f85149';
+    });
+
+    row.addEventListener('mouseleave', () => {
+      amountCell.style.transform = 'scale(1)';
+      amountCell.style.color     = '';
+    });
+  });
+
+  // ── 7. STAT CARD HOVER EFFECTS ────────────────────────────────────────────
 // Adds a lift + glow hover effect to each stat card dynamically.
 // Each card type (green, red, yellow) gets its own matching glow color
 // so the effect feels cohesive with the card's accent color.
