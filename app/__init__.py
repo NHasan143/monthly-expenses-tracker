@@ -1,3 +1,56 @@
+# __init__.py
+# Application factory for the Flask app. Centralizing app creation in
+# create_app() allows the application to be instantiated with different
+# configurations (e.g. testing vs. production) and avoids circular imports
+# by deferring extension and blueprint registration until call time.
+#
+#
+# Module-level Instances:
+#   - bcrypt
+#       A Bcrypt instance created here so it can be imported directly by
+#       auth.py for password hashing and verification without going through
+#       the app object. Bound to the app via bcrypt.init_app(app) inside
+#       create_app().
+#
+#
+# Internal Helper:
+#   - _get_database_url()
+#       Resolves the database connection string at startup. On Render (and
+#       similar PaaS platforms), DATABASE_URL is injected automatically as
+#       an environment variable using the legacy 'postgres://' scheme.
+#       SQLAlchemy 1.4+ requires 'postgresql://', so the prefix is corrected
+#       here if needed. Falls back to a local SQLite file (users.db) when
+#       DATABASE_URL is not set, keeping the development setup dependency-free.
+#
+#
+# create_app():
+#   The application factory. Builds and returns a fully configured Flask app.
+#   Initialization is performed in four stages:
+#
+#   1. Config
+#       Sets the secret key (used for session signing and CSRF protection),
+#       the database URI from _get_database_url(), and SQLAlchemy options:
+#         - pool_pre_ping  : Tests connections before use to handle dropped
+#                            or timed-out database connections gracefully.
+#         - pool_recycle   : Recycles connections every 5 minutes to prevent
+#                            stale connection errors on long-running deployments.
+#
+#   2. Extensions
+#       Initializes SQLAlchemy (db), Bcrypt, and Flask-Login against the app.
+#       Flask-Login is configured to redirect unauthenticated users to the
+#       auth.login route, flashing an error-category message. The user_loader
+#       callback is registered here to tell Flask-Login how to reload a user
+#       from their session-stored ID on each request.
+#
+#   3. Database Tables
+#       Calls db.create_all() inside an app context to create any tables that
+#       do not already exist. This is a no-op on subsequent startups and is
+#       safe for both SQLite (development) and PostgreSQL (production).
+#
+#   4. Blueprints
+#       Registers the auth and main blueprints, which define all URL routes
+#       for authentication (auth.py) and the main application (routes.py).
+
 import os
 from flask import Flask
 from flask_login import LoginManager

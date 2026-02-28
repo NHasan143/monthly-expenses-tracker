@@ -1,3 +1,65 @@
+# routes.py
+# Defines all main application routes via a Flask Blueprint. This module handles
+# the request/response cycle for every page and action in the app, delegating all
+# database operations to data.py and keeping route handlers focused purely on HTTP
+# logic, validation, and template rendering.
+#
+# All routes are protected by @login_required — unauthenticated users are
+# redirected to the login page automatically by Flask-Login.
+#
+#
+# Dashboard:
+#   - GET  /
+#       Loads the current user's data and computes derived stats (balance,
+#       total expenses, per-category totals, savings rate) before rendering
+#       the main dashboard. Category totals are also serialized to JSON for
+#       use in the frontend chart.
+#
+#
+# Expenses:
+#   - GET  /expenses
+#       Renders the full expense list with running balance and total.
+#
+#   - POST /add
+#       Validates form input (description, category, and a positive amount),
+#       then inserts a new expense via data.py. On error, redirects back to
+#       the referring page to preserve context (e.g. dashboard or expenses).
+#
+#   - POST /delete/<index>
+#       Deletes the expense at the given list position. Flashes a confirmation
+#       with the deleted expense's name on success, or an error if not found.
+#
+#   - POST /edit/<index>
+#       Validates and applies updated fields to the expense at the given
+#       position. Returns success or not-found feedback via flash messages.
+#
+#
+# Settings:
+#   - GET  /settings
+#       Renders the settings page with the current user's salary and data.
+#
+#   - POST /update-salary
+#       Validates and persists a new salary value. Rejects negative numbers.
+#
+#   - POST /reset
+#       Wipes all expenses and resets salary to 0.0. Requires the user to
+#       type "RESET" exactly in the confirmation field to prevent accidents.
+#
+#
+# Export:
+#   - GET  /export
+#       Generates a CSV file in-memory containing all of the user's expenses
+#       (description, category, amount) followed by a summary block with
+#       salary, total expenses, and remaining balance. Returned as a direct
+#       file download named 'budget_export.csv'.
+#
+#
+# Dependencies:
+#   - Flask-Login  : Session-aware current_user and @login_required guard.
+#   - data.py      : All database reads and writes (load, save, add, delete, edit, reset).
+#   - csv / io     : In-memory CSV generation for the export route.
+#   - json         : Serializes category totals for the dashboard chart.
+
 import csv
 import io
 import json

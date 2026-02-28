@@ -1,3 +1,31 @@
+# auth.py
+# Handles all authentication-related routes for the application using a Flask Blueprint.
+#
+# This module defines three core routes:
+#
+#   - /register  : Accepts GET and POST requests. On GET, renders the registration form.
+#                  On POST, validates user input (required fields, minimum lengths,
+#                  password confirmation, and uniqueness of username/email), hashes the
+#                  password with bcrypt, persists the new User to the database, and logs
+#                  them in immediately, redirecting to the dashboard.
+#
+#   - /login     : Accepts GET and POST requests. On GET, renders the login form.
+#                  On POST, validates credentials against the database using bcrypt,
+#                  supports a "remember me" option, and redirects to either the originally
+#                  requested page (via the `next` query parameter) or the dashboard.
+#
+#   - /logout    : GET only, protected by @login_required. Logs the current user out
+#                  and redirects to the login page.
+#
+# Dependencies:
+#   - Flask-Login  : Manages user session state (login_user, logout_user, current_user).
+#   - Flask-Bcrypt : Handles secure password hashing and verification.
+#   - SQLAlchemy   : Persists and queries User records via the shared `db` instance.
+#
+# All routes redirect authenticated users away from the register/login pages to prevent
+# redundant access. Flash messages are used throughout to surface validation errors and
+# success confirmations to the user.
+
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from .models import db, User

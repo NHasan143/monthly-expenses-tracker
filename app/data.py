@@ -1,10 +1,62 @@
-"""
-data.py — All budget data operations, now backed by PostgreSQL via SQLAlchemy.
-
-The public function signatures (load_data, save_data, calculate_balance,
-get_category_totals, reset_data) are identical to the old JSON version so
-routes.py requires zero changes.
-"""
+# data.py
+# Provides all budget data operations for the application, backed by PostgreSQL
+# via SQLAlchemy. This module acts as the data access layer between routes.py
+# and the database models, keeping all query logic centralized and out of the
+# route handlers.
+#
+# Public function signatures are intentionally identical to the previous JSON-
+# based implementation, meaning routes.py requires no changes after the migration.
+#
+#
+# Internal Helpers:
+#   - _get_or_create_settings(user_id)
+#       Fetches the UserSettings row for a given user, or creates one with a
+#       default salary of 0.0 if none exists. Used internally by most functions
+#       to guarantee a settings record is always present.
+#
+#
+# Public API:
+#   - load_data(user_id)
+#       Returns a dict containing the user's salary and a list of all their
+#       expenses ordered by creation date (ascending). Each expense is a plain
+#       dict: { id, description, category, amount }.
+#
+#   - save_data(user_id, data)
+#       Persists the user's salary and fully replaces their expense set in one
+#       operation (delete-all + re-insert). Primarily used by edit operations.
+#       For single add/delete actions, prefer the targeted functions below.
+#
+#   - save_salary(user_id, salary)
+#       Updates only the user's salary without touching expenses. More efficient
+#       than save_data() when only the settings page is updated.
+#
+#   - add_expense(user_id, description, category, amount)
+#       Inserts a single new Expense row and returns the created object.
+#
+#   - delete_expense_by_index(user_id, index)
+#       Deletes the expense at the given position in the user's ordered list.
+#       Returns the deleted expense as a dict, or None if the index is out of range.
+#
+#   - edit_expense_by_index(user_id, index, description, category, amount)
+#       Updates the fields of the expense at the given position. Returns True on
+#       success, or False if the index is out of range.
+#
+#   - calculate_balance(salary, expenses)
+#       Pure utility function. Returns the remaining balance after summing all
+#       expense amounts from the provided list.
+#
+#   - get_category_totals(expenses)
+#       Aggregates expense amounts by category from the provided list and returns
+#       a dict sorted by total in descending order.
+#
+#   - reset_data(user_id)
+#       Deletes all expenses for a user and resets their salary to 0.0.
+#       Returns a clean empty data dict: { salary: 0.0, expenses: [] }.
+#
+#
+# Dependencies:
+#   - SQLAlchemy  : All database reads and writes via the shared `db` instance.
+#   - models.py   : Expense and UserSettings ORM models.
 
 from .models import db, Expense, UserSettings
 
