@@ -208,17 +208,19 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('a[href]').forEach(link => {
     const href = link.getAttribute('href');
 
-    // Skip anchor links, export downloads, and external URLs
-    if (!href || href.startsWith('#') || href.includes('/export')) return;
+    // Skip anchor links, export downloads, external URLs, and _blank links
+    if (
+      !href ||
+      href.startsWith('#') ||
+      href.includes('/export') ||
+      href.startsWith('http') ||        // ← skip all external links
+      link.getAttribute('target') === '_blank'  // ← skip all new-tab links
+    ) return;
 
     link.addEventListener('click', function (e) {
-      e.preventDefault();           // Stop the browser from navigating immediately
-      const target = this.href;     // Save the destination URL
-
-      // Fade the page out
+      e.preventDefault();
+      const target = this.href;
       document.body.style.opacity = '0';
-
-      // After the fade-out transition completes, navigate to the new page
       setTimeout(() => {
         window.location.href = target;
       }, 300);
