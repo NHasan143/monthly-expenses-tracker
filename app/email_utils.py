@@ -141,7 +141,7 @@ def send_welcome_email(user) -> None:
 
     try:
         mail.send(msg)
-    except Exception as exc:
+    except BaseException as exc:
         # Log but never let a mail failure crash registration
         current_app.logger.error(
             "[email] Failed to send welcome email to " + user.email + ": " + str(exc)
@@ -202,7 +202,7 @@ def send_password_reset_email(user, reset_url: str) -> None:
 
     try:
         mail.send(msg)
-    except Exception as exc:
+    except BaseException as exc:
         # Log but never let a mail failure block the user flow
         current_app.logger.error(
             "[email] Failed to send reset email to " + user.email + ": " + str(exc)
