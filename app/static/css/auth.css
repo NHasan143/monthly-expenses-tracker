@@ -122,3 +122,14 @@
 .auth-card .flash {
   margin-bottom: 16px;
 }
+
+/* ── Forgot Password Link ─────────────────────────────────────── */
+.auth-forgot-link {
+  font-size: 12px;
+  color: var(--text);
+  text-decoration: none;
+  transition: color 0.15s ease;
+  white-space: nowrap;
+}
+
+.auth-forgot-link:hover { color: var(--accent); }

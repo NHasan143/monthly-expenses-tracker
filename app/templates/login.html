@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login — Budget Tracker</title>
+  <title>Login — Monthly Expense Tracker</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
@@ -17,8 +17,8 @@
     <!-- Brand -->
     <div class="auth-brand">
       <div class="auth-logo"></div>
-      <h1 class="auth-app-name">Budget Tracker</h1>
-      <p class="auth-tagline">Personal Finance Dashboard</p>
+      <h1 class="auth-app-name">Monthly Expense Tracker</h1>
+      <p class="auth-tagline">Your Personal Expense Tracker</p>
     </div>
 
     <!-- Card -->
@@ -52,7 +52,12 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Password</label>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <label class="form-label" style="margin-bottom:0;">Password</label>
+            <a href="{{ url_for('auth.forgot_password') }}" class="auth-forgot-link">
+              Forgot password?
+            </a>
+          </div>
           <input
             class="form-input"
             type="password"
@@ -81,6 +86,8 @@
     </div>
 
   </div>
+
+  <script src="{{ url_for('static', filename='js/modals.js') }}"></script>
 
 </body>
 </html>
