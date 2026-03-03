@@ -391,7 +391,6 @@ document.querySelectorAll('.stat-card').forEach(card => {
 
 }); // End DOMContentLoaded
 
-
 /**
  * Animates the colored bars in "By Category" section
  */
