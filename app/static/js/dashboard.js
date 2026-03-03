@@ -389,5 +389,41 @@ document.querySelectorAll('.stat-card').forEach(card => {
 });
 // ── End Stat Card Hover Effects ───────────────────────────────────────────
 
-
 }); // End DOMContentLoaded
+
+
+/**
+ * Animates the colored bars in "By Category" section
+ */
+
+if (gsap) {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
+// Doughnut chart hover effect
+function addChartHoverEffect() {
+  const canvas = document.getElementById('expenseChart');
+  if (!canvas) return;
+  
+  canvas.addEventListener('mouseenter', () => {
+    canvas.style.cursor = 'pointer';
+    
+  });
+  
+  canvas.addEventListener('mouseleave', () => {
+    canvas.style.cursor = 'default';
+    
+    // Scale back to normal
+    gsap.to(canvas, {
+      scale: 1,
+      duration: 0.3,
+      ease: "power2.out"
+    });
+  });
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+  if (!gsap) return;
+  addChartHoverEffect();
+});
