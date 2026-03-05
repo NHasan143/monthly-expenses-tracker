@@ -4,3 +4,5 @@ flask-sqlalchemy>=3.1.1
 flask-bcrypt>=1.0.1
 psycopg2-binary>=2.9.9
 gunicorn>=21.2.0
+flask-mail>=0.10.0
+python-dotenv>=1.0.0
