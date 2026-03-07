@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 }); // End DOMContentLoaded
 
-// ── 8. DARK TO LIGHT MODE TRANSITION ───────────────────────────────────────────
+// ── 7. DARK TO LIGHT MODE TRANSITION ───────────────────────────────────────────
 // Toggles between dark mode (default) and light mode by adding/removing
 // the 'light-mode' class on the <body> element.
 //
@@ -201,7 +201,7 @@ function toggleTheme() {
   localStorage.setItem('theme', isLight ? 'light' : 'dark');
 }
 
-// ── 9. CLICK RIPPLE + PARTICLE BURST ─────────────────────────────────────────
+// ── 8. CLICK RIPPLE + PARTICLE BURST ─────────────────────────────────────────
 // On every click, two effects fire simultaneously from the click point:
 //   1. A ripple ring expands outward and fades — like a water drop
 //   2. 20 small particles explode outward in random directions and shrink away
@@ -306,3 +306,18 @@ document.head.appendChild(clickEffectStyle);
   }
 })();
 // ── End Dark / Light Mode Toggle ──────────────────────────────────────────────
+
+// ── 9. PASSWORD VISIBILITY TOGGLE ────────────────────────────────────────────────
+// Toggles the input type between 'password' and 'text' so the user can
+// verify what they've typed. The eye icon updates to reflect the current state.
+//
+// @param {string} inputId - The id of the password input field
+// @param {HTMLElement} btn - The toggle button element (to update its icon)
+
+function togglePassword(inputId, btn) {
+  const input = document.getElementById(inputId);
+  const isHidden = input.type === 'password';
+  input.type     = isHidden ? 'text' : 'password';
+  btn.textContent = isHidden ? '🔐' : '👁';
+}
+// ── End Password Visibility Toggle ────────────────────────────────────────────

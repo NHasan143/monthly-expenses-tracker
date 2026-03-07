@@ -107,3 +107,4 @@ class Expense(db.Model):
 
     def __repr__(self):
         return f'<Expense {self.description} ${self.amount}>'
+

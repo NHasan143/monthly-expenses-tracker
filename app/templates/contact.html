@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact — Your Personal Expenses Tracker{% endblock %}
+{% block page_title %}Contact{% endblock %}
+
+{% block content %}
+
+<div style="max-width: 580px;">
+  <div class="card">
+
+    <div class="card-title">Get in Touch</div>
+    <p class="text-muted text-sm" style="margin-bottom: 24px; line-height: 1.7;">
+      Found a bug or have an idea to improve the app? Fill in the form below and
+      I'll get back to you as soon as possible.
+    </p>
+
+    <form method="POST" action="{{ url_for('main.send_contact') }}">
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="form-group">
+          <label class="form-label">Your Name</label>
+          <input
+            class="form-input"
+            name="name"
+            type="text"
+            placeholder="e.g. John Doe"
+            value="{{ request.form.get('name', '') }}"
+            required
+            autofocus
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Your Email</label>
+          <input
+            class="form-input"
+            name="email"
+            type="email"
+            placeholder="you@example.com"
+            value="{{ request.form.get('email', '') }}"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select class="form-input" name="category" required>
+          <option value="" disabled {{ 'selected' if not request.form.get('category') }}>
+            Select a category
+          </option>
+          <option value="Bug Report"       {{ 'selected' if request.form.get('category') == 'Bug Report' }}>
+            🐛 Bug Report
+          </option>
+          <option value="Feature Request"  {{ 'selected' if request.form.get('category') == 'Feature Request' }}>
+            💡 Feature Request
+          </option>
+          <option value="General Feedback" {{ 'selected' if request.form.get('category') == 'General Feedback' }}>
+            💬 General Feedback
+          </option>
+          <option value="Other"            {{ 'selected' if request.form.get('category') == 'Other' }}>
+            📌 Other
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Message</label>
+        <textarea
+          class="form-input"
+          name="message"
+          rows="6"
+          placeholder="Describe your issue or idea in detail..."
+          required
+          style="resize: vertical; min-height: 140px;"
+        >{{ request.form.get('message', '') }}</textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+        Send Message
+      </button>
+
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}{% endblock %}

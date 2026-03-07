@@ -118,6 +118,8 @@ def create_app():
         'MAIL_DEFAULT_SENDER',
         os.environ.get('MAIL_USERNAME', 'noreply@budgettracker.app')
     )
+    app.config['MAIL_RECEIVER'] = os.environ.get('MAIL_RECEIVER', '')  # ← ADD THIS
+
 
     # ── Extensions ────────────────────────────────────────────────
     from .models import db, User

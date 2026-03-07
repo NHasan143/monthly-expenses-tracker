@@ -63,8 +63,10 @@
 import csv
 import io
 import json
-from flask import Blueprint, render_template, request, redirect, url_for, flash, send_file
+from flask import Blueprint, render_template, request, redirect, url_for, flash, send_file, current_app
 from flask_login import login_required, current_user
+from .models import db
+from datetime import datetime
 from .data import (
     load_data, save_salary, add_expense as db_add_expense,
     delete_expense_by_index, edit_expense_by_index,
@@ -91,7 +93,8 @@ def dashboard():
         total_expenses=total_expenses,
         category_totals=category_totals,
         savings_rate=savings_rate,
-        category_totals_json=json.dumps(category_totals)
+        category_totals_json=json.dumps(category_totals),
+        current_year=datetime.utcnow().year
     )
 
 
@@ -172,6 +175,39 @@ def edit_expense(index):
     return redirect(url_for('main.expenses'))
 
 
+# -------- Expense API route for monthly totals (used by the dashboard chart) -------
+from datetime import datetime
+
+@main.route('/api/monthly-expenses')
+@login_required
+def monthly_expenses_api():
+    """Returns monthly expense totals for the current year as JSON."""
+    from flask import jsonify
+    
+    data   = load_data(current_user.id)
+    salary = data['salary']
+    
+    # We need created_at per expense — query the model directly
+    from .models import Expense
+    year = datetime.utcnow().year
+    
+    monthly = {m: 0.0 for m in range(1, 13)}
+    
+    expenses = (
+        Expense.query
+        .filter_by(user_id=current_user.id)
+        .filter(db.extract('year', Expense.created_at) == year)
+        .all()
+    )
+    
+    for e in expenses:
+        monthly[e.created_at.month] += e.amount
+    
+    return jsonify({
+        'salary':  salary,
+        'monthly': [{'month': m, 'total': round(monthly[m], 2)} for m in range(1, 13)]
+    })
+
 # ── Settings ──────────────────────────────────────────────────────────────────
 
 @main.route('/settings')
@@ -235,3 +271,47 @@ def export_csv():
         as_attachment=True,
         download_name='budget_export.csv'
     )
+
+# ── Contact ───────────────────────────────────────────────────────────────────
+
+@main.route('/contact')
+@login_required
+def contact():
+    return render_template('contact.html')
+
+
+@main.route('/contact/send', methods=['POST'])
+@login_required
+def send_contact():
+    from flask_mail import Message as MailMessage
+    from . import mail
+
+    name     = request.form.get('name',     '').strip()
+    email    = request.form.get('email',    '').strip()
+    category = request.form.get('category', '').strip()
+    message  = request.form.get('message',  '').strip()
+
+    if not name or not email or not category or not message:
+        flash('All fields are required.', 'error')
+        return redirect(url_for('main.contact'))
+
+    try:
+        msg = MailMessage(
+            subject  = f'[Budget Tracker] {category} from {name}',
+            sender   = current_app.config['MAIL_USERNAME'],
+            recipients = [current_app.config['MAIL_RECEIVER']],
+            body = f"""
+Name:     {name}
+Email:    {email}
+Category: {category}
+
+Message:
+{message}
+            """.strip()
+        )
+        mail.send(msg)
+        flash('Your message has been sent successfully!', 'success')
+    except Exception as e:
+        flash(f'Error: {str(e)}', 'error')
+
+    return redirect(url_for('main.contact'))

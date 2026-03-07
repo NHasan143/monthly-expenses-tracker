@@ -14,6 +14,9 @@
   <!-- Stylesheet -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
 
+  <!-- D3.js -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
@@ -30,7 +33,7 @@
   <aside class="sidebar">
     <div class="sidebar-brand">
       <div class="logo-icon"></div>
-      <h1>Budget Tracker</h1>
+      <h1>Expense Tracker</h1>
       <span>Keep Your Finance Tracked</span>
     </div>
 
@@ -49,6 +52,9 @@
     <div class="sidebar-footer">
       <a href="{{ url_for('main.export_csv') }}">
         <span>↓</span> Export CSV
+      </a>
+      <a href="{{ url_for('main.contact') }}" class="{{ 'active' if request.endpoint == 'main.contact' }}">
+        <span>✉</span> Contact Developer
       </a>
     </div>
   </aside>
