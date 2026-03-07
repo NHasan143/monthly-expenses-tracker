@@ -65,7 +65,7 @@ def _base_html(header_subtitle, body_content):
         "<tr><td style='padding:32px 40px 24px;"
         "border-bottom:1px solid #30363d;text-align:center;'>"
         "<p style='margin:0 0 8px;font-size:22px;font-weight:800;"
-        "color:#e6edf3;'>💰 Budget Tracker</p>"
+        "color:#e6edf3;'>💰 Monthly Expense Tracker</p>"
         "<p style='margin:0;font-size:13px;color:#8b949e;'>"
         + header_subtitle +
         "</p></td></tr>"
@@ -75,7 +75,7 @@ def _base_html(header_subtitle, body_content):
         "<tr><td style='padding:20px 40px;"
         "border-top:1px solid #30363d;text-align:center;'>"
         "<p style='margin:0;font-size:12px;color:#8b949e;'>"
-        "© 2026 Monthly Expense Tracker - Created with ❤️ by "
+        "© Monthly Expense Tracker - Created with ❤️ by "
         "<a href='https://github.com/NHasan143'"
         " style='color:#3bdf91;text-decoration:none;'>Naymul Hasan</a>"
         "</p></td></tr>"
@@ -95,7 +95,7 @@ def send_welcome_email(user) -> None:
         "<p style='margin:0 0 16px;font-size:20px;font-weight:700;"
         "color:#e6edf3;'>Welcome aboard, " + user.username + "! 🎉</p>"
         "<p style='margin:0 0 16px;font-size:15px;color:#8b949e;line-height:1.7;'>"
-        "Your Budget Tracker account is all set. You can now log your income, "
+        "Your Monthly Expense Tracker account is all set. You can now log your income, "
         "track expenses by category, visualise your spending, and export "
         "summaries to CSV — all in one place.</p>"
         "<table cellpadding='0' cellspacing='0' width='100%'"
@@ -158,7 +158,7 @@ def send_password_reset_email(user, reset_url: str) -> None:
         "color:#e6edf3;'>Reset your password</p>"
         "<p style='margin:0 0 16px;font-size:15px;color:#8b949e;line-height:1.7;'>"
         "Hi <strong style='color:#e6edf3;'>" + user.username + "</strong>, "
-        "we received a request to reset your Budget Tracker password. "
+        "we received a request to reset your Monthly Expense Tracker password. "
         "Click the button below to choose a new password.</p>"
         "<table cellpadding='0' cellspacing='0' width='100%'"
         " style='margin:20px 0;background:rgba(248,81,73,0.08);"
@@ -186,15 +186,15 @@ def send_password_reset_email(user, reset_url: str) -> None:
 
     text_body = (
         "Hi " + user.username + ",\n\n"
-        "We received a request to reset your Budget Tracker password.\n\n"
+        "We received a request to reset your Monthly Expense Tracker password.\n\n"
         "Reset link (expires in 1 hour):\n" + reset_url + "\n\n"
         "If you didn't request this, ignore this email — "
         "your password won't change.\n\n"
-        "— The Budget Tracker Team"
+        "— The Monthly Expense Tracker Team"
     )
 
     msg = Message(
-        subject="Reset your Budget Tracker password",
+        subject="Reset your Monthly Expense Tracker password",
         recipients=[user.email],
         body=text_body,
         html=html_body,
