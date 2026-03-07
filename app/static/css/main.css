@@ -585,3 +585,28 @@ body.light-mode .app-footer { border-color: #d0d7de; color: #57606a; }
   color: var(--accent);
   border-bottom-color: var(--accent);
 }
+
+/* ── Contact Page ───────────────────────────────────────────── */
+textarea.form-input {
+  font-family: 'DM Sans', sans-serif;
+  line-height: 1.6;
+}
+
+select.form-input {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238b949e' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+
+select.form-input option {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+body.light-mode select.form-input option {
+  background: #eef0f4;
+  color: #1a1f2e;
+}

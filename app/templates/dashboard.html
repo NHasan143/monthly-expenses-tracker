@@ -79,6 +79,16 @@
   </div>
 </div>
 
+<!-- ── Monthly Expenses D3 Chart ──────────────────────────────── -->
+<div class="card mb-6" style="margin-bottom: 20px;">
+  <div class="card-title">Your Expenses by Month {{ current_year }}</div>
+  <p class="text-muted text-sm" style="margin-bottom: 16px; font-size: 13px;">
+    Bars turn <span style="color:#f85149; font-weight:600;">red</span> when you spend 
+    <strong style="color: var(--text);">90%</strong> of your monthly salary. Kepp you hands on the budget!
+  </p>
+  <div id="monthly-expenses-chart" style="width:100%; overflow-x: auto;"></div>
+</div>
+
 <!-- ── Recent Expenses Table ───────────────────────────────────── -->
 <div class="card">
   <div class="flex justify-between items-center mb-6" style="margin-bottom: 16px;">
@@ -169,4 +179,5 @@
   <script>window.CATEGORY_DATA = {{ category_totals_json|safe }};</script>
   {% endif %}
   <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/monthly_chart.js') }}"></script>
 {% endblock %}

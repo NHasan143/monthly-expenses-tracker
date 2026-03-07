@@ -75,7 +75,7 @@ def _base_html(header_subtitle, body_content):
         "<tr><td style='padding:20px 40px;"
         "border-top:1px solid #30363d;text-align:center;'>"
         "<p style='margin:0;font-size:12px;color:#8b949e;'>"
-        "© 2025 Budget Tracker · Built by "
+        "© 2026 Monthly Expense Tracker - Created with ❤️ by "
         "<a href='https://github.com/NHasan143'"
         " style='color:#3bdf91;text-decoration:none;'>Naymul Hasan</a>"
         "</p></td></tr>"
@@ -125,15 +125,15 @@ def send_welcome_email(user) -> None:
     html_body = _base_html("Personal Finance Dashboard", body_content)
 
     text_body = (
-        "Welcome to Budget Tracker, " + user.username + "!\n\n"
+        "Welcome to Monthly Expense Tracker, " + user.username + "!\n\n"
         "Your account is ready. Start tracking your expenses and taking "
         "control of your finances.\n\n"
         "If you didn't create this account, please ignore this email.\n\n"
-        "— The Budget Tracker Team"
+        "— The Monthly Expense Tracker Team"
     )
 
     msg = Message(
-        subject="Welcome to Budget Tracker 💰",
+        subject="Welcome to Monthly Expense Tracker 💰",
         recipients=[user.email],
         body=text_body,
         html=html_body,
