@@ -134,4 +134,30 @@
   white-space: nowrap;
 }
 
-.auth-forgot-link:hover { color: var(--accent); }
+.auth-forgot-link:hover {color: var(--accent);}
+
+/* ── Password Toggle ─────────────────────────────────────────── */
+.password-wrap {
+  position: relative;
+}
+
+.password-wrap .form-input {
+  padding-right: 42px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 16px;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.15s ease;
+}
+
+.password-toggle:hover { color: var(--text); }

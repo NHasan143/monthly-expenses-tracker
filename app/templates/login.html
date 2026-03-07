@@ -52,19 +52,23 @@
         </div>
 
         <div class="form-group">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <div style="display:flex; justify-content:space-between; ...">
             <label class="form-label" style="margin-bottom:0;">Password</label>
             <a href="{{ url_for('auth.forgot_password') }}" class="auth-forgot-link">
               Forgot password?
             </a>
           </div>
-          <input
+          <div class="password-wrap">
+            <input
             class="form-input"
             type="password"
             name="password"
+            id="password"
             placeholder="••••••••"
             required
-          />
+            />
+            <button type="button" class="password-toggle" onclick="togglePassword('password', this)">👁</button>
+          </div>
         </div>
 
         <div class="auth-remember">
