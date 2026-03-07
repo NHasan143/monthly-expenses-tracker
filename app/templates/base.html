@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>{% block title %}Your Personal Expenses Tracker{% endblock %}</title>
 
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='Assets/favicon.png') }}" />
+
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -32,29 +35,31 @@
   <!-- ── Sidebar ────────────────────────────────────────────────── -->
   <aside class="sidebar">
     <div class="sidebar-brand">
-      <div class="logo-icon"></div>
-      <h1>Expense Tracker</h1>
-      <span>Keep Your Finance Tracked</span>
+      <img
+      src="{{ url_for('static', filename='Assets/logo.png') }}"
+      alt="Monthly Expense Tracker Logo"
+      style="width: 200px; height: 200px; object-fit: contain;"
+    />
     </div>
 
     <nav class="sidebar-nav">
       <a href="{{ url_for('main.dashboard') }}" class="{{ 'active' if request.endpoint == 'main.dashboard' }}">
-        <span class="nav-icon">▦</span> Dashboard
+        <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-dashboard-icon lucide-layout-dashboard"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg></span> Dashboard
       </a>
       <a href="{{ url_for('main.expenses') }}" class="{{ 'active' if request.endpoint == 'main.expenses' }}">
-        <span class="nav-icon">≡</span> Expenses
+        <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-hand-coins-icon lucide-hand-coins"><path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17"/><path d="m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9"/><path d="m2 16 6 6"/><circle cx="16" cy="9" r="2.9"/><circle cx="6" cy="5" r="3"/></svg></span> Expenses
       </a>
       <a href="{{ url_for('main.settings') }}" class="{{ 'active' if request.endpoint == 'main.settings' }}">
-        <span class="nav-icon">⚙</span> Settings
+        <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings2-icon lucide-settings-2"><path d="M14 17H5"/><path d="M19 7h-9"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg></span> Settings
       </a>
     </nav>
 
     <div class="sidebar-footer">
       <a href="{{ url_for('main.export_csv') }}">
-        <span>↓</span> Export CSV
+        Export CSV <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3bdf91" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right-icon lucide-arrow-up-right"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
       </a>
       <a href="{{ url_for('main.contact') }}" class="{{ 'active' if request.endpoint == 'main.contact' }}">
-        <span>✉</span> Contact Developer
+        Contact Developer <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3bdf91" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail-icon lucide-mail"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>
       </a>
     </div>
   </aside>
@@ -73,7 +78,11 @@
           <div class="user-avatar">{{ current_user.username[0].upper() }}</div>
           <span class="user-name">{{ current_user.username }}</span>
         </div>
-        <button id="themeToggle" class="btn btn-ghost btn-sm" onclick="toggleTheme()">🌙 Dark</button>
+        <button id="themeToggle" class="btn btn-ghost btn-sm" onclick="toggleTheme()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3bdf91" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun-moon-icon lucide-sun-moon">
+            <path d="M12 2v2"/><path d="M14.837 16.385a6 6 0 1 1-7.223-7.222c.624-.147.97.66.715 1.248a4 4 0 0 0 5.26 5.259c.589-.255 1.396.09 1.248.715"/><path d="M16 12a4 4 0 0 0-4-4"/><path d="m19 5-1.256 1.256"/><path d="M20 12h2"/>
+          </svg>
+        </button>
         <a href="{{ url_for('auth.logout') }}" class="btn btn-ghost btn-sm">Sign Out</a>
         {% endif %}
       </div>
