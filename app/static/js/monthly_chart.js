@@ -20,7 +20,7 @@
   const COLOR_EMPTY  = '#30363d';
 
   const Y_MIN = 1000;
-  const Y_MAX = 10000;
+  const Y_MAX = 50000;
 
   function renderChart(salary, monthlyData) {
     const container = document.getElementById('monthly-expenses-chart');
@@ -94,7 +94,7 @@
     svg.append('g')
       .call(
         d3.axisLeft(y)
-          .tickValues([1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000])
+          .tickValues([1000, 5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000])
           .tickFormat(d => `$${(d / 1000).toFixed(0)}k`)
           .tickSize(-width)        // extend ticks across as grid lines
       )
