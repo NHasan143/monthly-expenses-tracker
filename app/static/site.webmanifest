@@ -1,0 +1,16 @@
+{
+  "name": "Monthly Expense Tracker",
+  "short_name": "Expense Tracker",
+  "description": "Personal monthly expense tracker and finance dashboard.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#0d1117",
+  "icons": [
+    {
+      "src": "/static/Assets/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
