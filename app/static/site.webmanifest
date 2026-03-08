@@ -1,6 +1,6 @@
 {
-  "name": "Budget Tracker",
-  "short_name": "Budget",
+  "name": "Monthly Expense Tracker",
+  "short_name": "Expense Tracker",
   "description": "Personal monthly expense tracker and finance dashboard.",
   "start_url": "/",
   "display": "standalone",
