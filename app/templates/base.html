@@ -8,6 +8,30 @@
   <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='Assets/favicon.png') }}" />
 
+  <!-- Primary Meta -->
+  <meta name="description" content="Track your monthly income and expenses, visualise spending by category, and export summaries to CSV — all in one clean dashboard." />
+  <meta name="author" content="Naymul Hasan" />
+  <meta name="robots" content="noindex, nofollow" />
+
+  <!-- Open Graph (WhatsApp, Facebook, LinkedIn previews) -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:site_name"   content="Budget Tracker" />
+  <meta property="og:title"       content="{% block og_title %}Budget Tracker — Personal Finance Dashboard{% endblock %}" />
+  <meta property="og:description" content="Track your monthly income and expenses, visualise spending by category, and export summaries to CSV." />
+  <meta property="og:url"         content="{{ request.url }}" />
+  <meta property="og:image"       content="{{ url_for('static', filename='Assets/og-preview.png', _external=True) }}" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="Budget Tracker — Personal Finance Dashboard" />
+  <meta name="twitter:description" content="Track your monthly income and expenses, visualise spending by category, and export to CSV." />
+  <meta name="twitter:image"       content="{{ url_for('static', filename='Assets/og-preview.png', _external=True) }}" />
+
+  <!-- PWA / Mobile -->
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='Assets/favicon.png') }}" />
+  <link rel="manifest" href="{{ url_for('static', filename='site.webmanifest') }}" />
+  <meta name="theme-color" content="#0d1117" />
+
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
