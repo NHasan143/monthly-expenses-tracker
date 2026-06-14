@@ -5,7 +5,7 @@
 
 {% block content %}
 
-<div style="max-width: 580px; display: flex; flex-direction: column; gap: 20px;">
+<div class="settings-grid">
 
   <!-- ── Update Salary ─────────────────────────────────────────── -->
   <div class="card">
@@ -40,7 +40,7 @@
   </div>
 
   <!-- ── Danger Zone ───────────────────────────────────────────── -->
-  <div class="card" style="border-color: rgba(248,81,73,0.3);">
+  <div class="card settings-danger" style="border-color: rgba(248,81,73,0.3);">
     <div class="card-title" style="color: var(--danger);">Danger Zone</div>
     <p class="text-muted text-sm" style="margin-bottom: 20px;">
       Permanently delete all budget data including salary and all expenses.
