@@ -5,84 +5,164 @@
 
 {% block content %}
 
-<div style="max-width: 580px;">
-  <div class="card">
+<section class="contact-shell">
+  <div class="contact-form-card">
+    <div class="contact-heading">
+      <span class="contact-eyebrow">Contact the developer</span>
+      <h1>Let’s get in touch</h1>
+      <p>
+        Found a bug, have a feature in mind, or simply want to share feedback?
+        Send a message and help make the tracker better.
+      </p>
+    </div>
 
-    <div class="card-title">Get in Touch</div>
-    <p class="text-muted text-sm" style="margin-bottom: 24px; line-height: 1.7;">
-      Found a bug or have an idea to improve the app? Fill in the form below and
-      I'll get back to you as soon as possible.
-    </p>
-
-    <form method="POST" action="{{ url_for('main.send_contact') }}">
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-        <div class="form-group">
-          <label class="form-label">Your Name</label>
+    <form class="contact-form" method="POST" action="{{ url_for('main.send_contact') }}">
+      <div class="contact-fields">
+        <div class="contact-field">
+          <label for="contact-name">Your name</label>
           <input
-            class="form-input"
+            id="contact-name"
+            class="contact-input"
             name="name"
             type="text"
             placeholder="e.g. John Doe"
             value="{{ request.form.get('name', '') }}"
+            autocomplete="name"
             required
             autofocus
           />
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Your Email</label>
+        <div class="contact-field">
+          <label for="contact-email">Your email</label>
           <input
-            class="form-input"
+            id="contact-email"
+            class="contact-input"
             name="email"
             type="email"
             placeholder="you@example.com"
             value="{{ request.form.get('email', '') }}"
+            autocomplete="email"
             required
           />
         </div>
+
+        <div class="contact-field">
+          <label for="contact-category">Subject</label>
+          <select id="contact-category" class="contact-input" name="category" required>
+            <option value="" disabled {{ 'selected' if not request.form.get('category') }}>
+              Choose a topic
+            </option>
+            <option value="Bug Report" {{ 'selected' if request.form.get('category') == 'Bug Report' }}>
+              Bug report
+            </option>
+            <option value="Feature Request" {{ 'selected' if request.form.get('category') == 'Feature Request' }}>
+              Feature request
+            </option>
+            <option value="General Feedback" {{ 'selected' if request.form.get('category') == 'General Feedback' }}>
+              General feedback
+            </option>
+            <option value="Other" {{ 'selected' if request.form.get('category') == 'Other' }}>
+              Other
+            </option>
+          </select>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label class="form-label">Category</label>
-        <select class="form-input" name="category" required>
-          <option value="" disabled {{ 'selected' if not request.form.get('category') }}>
-            Select a category
-          </option>
-          <option value="Bug Report"       {{ 'selected' if request.form.get('category') == 'Bug Report' }}>
-            🐛 Bug Report
-          </option>
-          <option value="Feature Request"  {{ 'selected' if request.form.get('category') == 'Feature Request' }}>
-            💡 Feature Request
-          </option>
-          <option value="General Feedback" {{ 'selected' if request.form.get('category') == 'General Feedback' }}>
-            💬 General Feedback
-          </option>
-          <option value="Other"            {{ 'selected' if request.form.get('category') == 'Other' }}>
-            📌 Other
-          </option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Message</label>
+      <div class="contact-field contact-message-field">
+        <label for="contact-message">Your message</label>
         <textarea
-          class="form-input"
+          id="contact-message"
+          class="contact-input"
           name="message"
-          rows="6"
-          placeholder="Describe your issue or idea in detail..."
+          rows="7"
+          placeholder="Tell me what’s on your mind..."
           required
-          style="resize: vertical; min-height: 140px;"
         >{{ request.form.get('message', '') }}</textarea>
       </div>
 
-      <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
-        Send Message
+      <button type="submit" class="contact-submit">
+        <span>Send message</span>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m22 2-7 20-4-9-9-4Z"/>
+          <path d="M22 2 11 13"/>
+        </svg>
       </button>
-
     </form>
   </div>
-</div>
+
+  <aside class="contact-info-card" aria-label="Developer contact information">
+    <div class="contact-info-intro">
+      <span class="contact-info-kicker">Have an idea?</span>
+      <h2>Let’s make budgeting feel simpler.</h2>
+      <p>Your feedback directly shapes what gets improved next.</p>
+    </div>
+
+    <div class="contact-info-list">
+      <a class="contact-info-item" href="https://github.com/NHasan143" target="_blank" rel="noopener noreferrer">
+        <span class="contact-info-icon">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3.28-.36 6.72-1.61 6.72-7A5.4 5.4 0 0 0 19.28 4 5.65 5.65 0 0 0 19.14.5S18 0 15 1.9a13.4 13.4 0 0 0-6 0C6 0 4.86.5 4.86.5A5.65 5.65 0 0 0 4.72 4a5.4 5.4 0 0 0-1.44 3.5c0 5.38 3.44 6.63 6.72 7A4.8 4.8 0 0 0 9 18v4"/>
+            <path d="M9 18c-4.51 2-5-2-7-2"/>
+          </svg>
+        </span>
+        <span>
+          <small>GitHub</small>
+          <strong>@NHasan143</strong>
+        </span>
+        <svg class="contact-info-arrow" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 17 17 7"/><path d="M7 7h10v10"/>
+        </svg>
+      </a>
+
+      <a class="contact-info-item" href="https://www.linkedin.com/in/naymulhasan143/" target="_blank" rel="noopener noreferrer">
+        <span class="contact-info-icon">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+            <rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/>
+          </svg>
+        </span>
+        <span>
+          <small>LinkedIn</small>
+          <strong>Naymul Hasan</strong>
+        </span>
+        <svg class="contact-info-arrow" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 17 17 7"/><path d="M7 7h10v10"/>
+        </svg>
+      </a>
+
+      <a class="contact-info-item" href="https://naymulhasan.com" target="_blank" rel="noopener noreferrer">
+        <span class="contact-info-icon">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 0 20"/><path d="M12 2a15.3 15.3 0 0 0 0 20"/>
+          </svg>
+        </span>
+        <span>
+          <small>Website</small>
+          <strong>naymulhasan.com</strong>
+        </span>
+        <svg class="contact-info-arrow" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 17 17 7"/><path d="M7 7h10v10"/>
+        </svg>
+      </a>
+
+      <a class="contact-info-item" href="mailto:contact@naymulhasan.com">
+        <span class="contact-info-icon">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/>
+          </svg>
+        </span>
+        <span>
+          <small>Email</small>
+          <strong>contact@naymulhasan.com</strong>
+        </span>
+        <svg class="contact-info-arrow" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 17 17 7"/><path d="M7 7h10v10"/>
+        </svg>
+      </a>
+    </div>
+  </aside>
+</section>
 
 {% endblock %}
 
