@@ -611,7 +611,7 @@ body.light-mode .app-footer { border-color: #d0d7de; color: #57606a; }
 .contact-shell {
   width: 100%;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.34fr);
+  grid-template-columns: minmax(0, 1.65fr) minmax(330px, 0.85fr);
   gap: 22px;
   align-items: stretch;
 }
