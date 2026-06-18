@@ -12,12 +12,26 @@
 
 {% block content %}
 
+<div class="month-toolbar">
+  <a class="btn btn-ghost btn-sm" href="{{ url_for('main.dashboard', month=previous_month) }}" aria-label="Previous month">←</a>
+  <form method="GET" action="{{ url_for('main.dashboard') }}" class="month-picker">
+    <label for="dashboard-month">Viewing</label>
+    <input id="dashboard-month" class="form-input" type="month" name="month"
+           value="{{ selected_month }}" onchange="this.form.submit()" />
+  </form>
+  <a class="btn btn-ghost btn-sm" href="{{ url_for('main.dashboard', month=next_month) }}" aria-label="Next month">→</a>
+  <strong>{{ selected_month_label }}</strong>
+  {% if not is_current_month %}
+    <a class="text-sm text-accent" href="{{ url_for('main.dashboard') }}">Back to this month</a>
+  {% endif %}
+</div>
+
 <!-- ── Stat Cards ──────────────────────────────────────────────── -->
 <div class="stat-grid">
   <div class="stat-card green">
     <div class="stat-label">Monthly Salary</div>
     <div class="stat-value green">${{ "%.2f"|format(data.salary) }}</div>
-    <div class="stat-sub">Total income this month</div>
+    <div class="stat-sub">Income used for {{ selected_month_label }}</div>
   </div>
 
   <div class="stat-card red">
@@ -82,6 +96,39 @@
   </div>
 </div>
 
+{% if budget_status %}
+<div class="card mb-6 category-budget-card">
+  <div class="flex justify-between items-center" style="margin-bottom: 18px;">
+    <div>
+      <div class="card-title" style="margin-bottom:4px;">Category Budgets</div>
+      <p class="text-muted text-sm">Monthly limits for {{ selected_month_label }}</p>
+    </div>
+    <a href="{{ url_for('main.settings') }}" class="text-sm text-accent" style="text-decoration:none;">Manage budgets →</a>
+  </div>
+  <div class="budget-progress-grid">
+    {% for budget in budget_status %}
+      {% set display_pct = 100 if budget.percent > 100 else budget.percent %}
+      <div class="budget-progress-item {{ 'over' if budget.percent >= 100 else 'warning' if budget.percent >= 80 }}">
+        <div class="flex justify-between items-center">
+          <strong>{{ budget.category }}</strong>
+          <span>${{ "%.2f"|format(budget.spent) }} / ${{ "%.2f"|format(budget.amount) }}</span>
+        </div>
+        <div class="budget-track">
+          <div class="budget-fill" style="width: {{ display_pct }}%;"></div>
+        </div>
+        <small>
+          {% if budget.remaining >= 0 %}
+            ${{ "%.2f"|format(budget.remaining) }} remaining
+          {% else %}
+            ${{ "%.2f"|format(budget.remaining|abs) }} over budget
+          {% endif %}
+        </small>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
 <!-- ── Monthly Expenses D3 Chart ──────────────────────────────── -->
 <div class="card mb-6" style="margin-bottom: 20px;">
   <div class="card-title">Your Expenses by Month {{ current_year }}</div>
@@ -105,6 +152,7 @@
       <thead>
         <tr>
           <th>Description</th>
+          <th>Date</th>
           <th>Category</th>
           <th style="text-align:right;">Amount</th>
           <th style="text-align:right;">% of Income</th>
@@ -119,6 +167,7 @@
           {% set pct = (expense.amount / data.salary * 100) if data.salary > 0 else 0 %}
           <tr>
             <td>{{ expense.description }}</td>
+            <td class="text-muted text-sm">{{ expense.expense_date }}</td>
             <td>
               <span class="badge" style="background: {{ color }}22; color: {{ color }};">
                 {{ expense.category }}
@@ -146,6 +195,10 @@
       <div class="form-group">
         <label class="form-label">Description</label>
         <input class="form-input" name="description" placeholder="e.g. Monthly rent" required autofocus />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Expense Date</label>
+        <input class="form-input" name="expense_date" type="date" value="{{ default_expense_date }}" required />
       </div>
       <div class="form-group">
         <label class="form-label">Category</label>
@@ -181,6 +234,7 @@
   {% if data.expenses %}
   <script>window.CATEGORY_DATA = {{ category_totals_json|safe }};</script>
   {% endif %}
+  <script>window.MONTHLY_CHART_YEAR = {{ current_year }};</script>
   <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
   <script src="{{ url_for('static', filename='js/monthly_chart.js') }}"></script>
 {% endblock %}

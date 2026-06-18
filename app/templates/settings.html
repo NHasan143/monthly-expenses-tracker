@@ -30,6 +30,51 @@
     </form>
   </div>
 
+  <!-- ── Category Budgets ──────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-title">Category Budgets</div>
+    <p class="text-muted text-sm" style="margin-bottom: 20px;">
+      Set reusable monthly limits for categories such as groceries, transport, or entertainment.
+    </p>
+    <form method="POST" action="{{ url_for('main.update_category_budget') }}">
+      <div class="budget-form-row">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <input class="form-input" name="category" list="budget-category-list"
+                 placeholder="e.g. Groceries" required />
+          <datalist id="budget-category-list">
+            {% for category in categories %}
+              <option value="{{ category }}">
+            {% endfor %}
+          </datalist>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Monthly Limit</label>
+          <input class="form-input" name="amount" type="number" min="0.01"
+                 step="0.01" placeholder="0.00" required />
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Save Budget</button>
+    </form>
+
+    {% if category_budgets %}
+    <div class="settings-budget-list">
+      {% for budget in category_budgets %}
+      <div class="settings-budget-row">
+        <span>
+          <strong>{{ budget.category }}</strong>
+          <small>${{ "%.2f"|format(budget.amount) }} per month</small>
+        </span>
+        <form method="POST" action="{{ url_for('main.remove_category_budget', budget_id=budget.id) }}"
+              onsubmit="return confirm('Remove this category budget?')">
+          <button class="btn btn-danger btn-sm" type="submit">Remove</button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
   <!-- ── Data Management ───────────────────────────────────────── -->
   <div class="card">
     <div class="card-title">Export Data</div>
@@ -43,7 +88,7 @@
   <div class="card settings-danger" style="border-color: rgba(248,81,73,0.3);">
     <div class="card-title" style="color: var(--danger);">Danger Zone</div>
     <p class="text-muted text-sm" style="margin-bottom: 20px;">
-      Permanently delete all budget data including salary and all expenses.
+      Permanently delete all budget data including salary, category budgets, and all expenses.
       <strong style="color: var(--text);">This cannot be undone.</strong>
     </p>
     <button class="btn btn-danger" onclick="openModal('resetModal')">Reset All Data</button>
