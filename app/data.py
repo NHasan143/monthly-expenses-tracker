@@ -58,7 +58,9 @@
 #   - SQLAlchemy  : All database reads and writes via the shared `db` instance.
 #   - models.py   : Expense and UserSettings ORM models.
 
-from .models import db, Expense, UserSettings
+from datetime import date
+from sqlalchemy import extract, or_
+from .models import db, CategoryBudget, Expense, UserSettings
 
 
 # ── Internal helpers ──────────────────────────────────────────────────────────
@@ -75,18 +77,27 @@ def _get_or_create_settings(user_id: int) -> UserSettings:
 
 # ── Public API (same signatures as old JSON version) ─────────────────────────
 
-def load_data(user_id: int) -> dict:
+def load_data(user_id: int, year: int | None = None, month: int | None = None,
+              search: str = '', category: str = '') -> dict:
     """
     Return a dict with 'salary' and 'expenses' list for a user.
     Each expense is a plain dict: {id, description, category, amount}.
     """
     settings = _get_or_create_settings(user_id)
-    expenses = (
-        Expense.query
-        .filter_by(user_id=user_id)
-        .order_by(Expense.created_at.asc())
-        .all()
-    )
+    query = Expense.query.filter_by(user_id=user_id)
+    if year:
+        query = query.filter(extract('year', Expense.expense_date) == year)
+    if month:
+        query = query.filter(extract('month', Expense.expense_date) == month)
+    if search:
+        term = f'%{search}%'
+        query = query.filter(or_(
+            Expense.description.ilike(term),
+            Expense.category.ilike(term),
+        ))
+    if category:
+        query = query.filter(Expense.category == category)
+    expenses = query.order_by(Expense.expense_date.asc(), Expense.id.asc()).all()
     return {
         'salary':   settings.salary,
         'expenses': [e.to_dict() for e in expenses]
@@ -113,7 +124,8 @@ def save_data(user_id: int, data: dict) -> None:
             user_id=user_id,
             description=e['description'],
             category=e.get('category', 'Uncategorized'),
-            amount=float(e['amount'])
+            amount=float(e['amount']),
+            expense_date=date.fromisoformat(e.get('expense_date', date.today().isoformat()))
         ))
 
     db.session.commit()
@@ -126,57 +138,42 @@ def save_salary(user_id: int, salary: float) -> None:
     db.session.commit()
 
 
-def add_expense(user_id: int, description: str, category: str, amount: float) -> Expense:
+def add_expense(user_id: int, description: str, category: str, amount: float,
+                expense_date: date) -> Expense:
     """Insert a single new expense row and return it."""
     expense = Expense(
         user_id=user_id,
         description=description,
         category=category,
-        amount=float(amount)
+        amount=float(amount),
+        expense_date=expense_date,
     )
     db.session.add(expense)
     db.session.commit()
     return expense
 
 
-def delete_expense_by_index(user_id: int, index: int) -> dict | None:
-    """
-    Delete the expense at position `index` in the user's ordered list.
-    Returns the deleted expense dict, or None if index is out of range.
-    """
-    expenses = (
-        Expense.query
-        .filter_by(user_id=user_id)
-        .order_by(Expense.created_at.asc())
-        .all()
-    )
-    if not (0 <= index < len(expenses)):
+def delete_expense(user_id: int, expense_id: int) -> dict | None:
+    """Delete one expense by its stable database ID."""
+    target = Expense.query.filter_by(user_id=user_id, id=expense_id).first()
+    if not target:
         return None
-    target = expenses[index]
     removed = target.to_dict()
     db.session.delete(target)
     db.session.commit()
     return removed
 
 
-def edit_expense_by_index(user_id: int, index: int,
-                           description: str, category: str, amount: float) -> bool:
-    """
-    Update the expense at position `index`. Returns True on success, False if
-    index is out of range.
-    """
-    expenses = (
-        Expense.query
-        .filter_by(user_id=user_id)
-        .order_by(Expense.created_at.asc())
-        .all()
-    )
-    if not (0 <= index < len(expenses)):
+def edit_expense(user_id: int, expense_id: int, description: str, category: str,
+                 amount: float, expense_date: date) -> bool:
+    """Update one expense by its stable database ID."""
+    target = Expense.query.filter_by(user_id=user_id, id=expense_id).first()
+    if not target:
         return False
-    target = expenses[index]
     target.description = description
     target.category    = category
     target.amount      = float(amount)
+    target.expense_date = expense_date
     db.session.commit()
     return True
 
@@ -195,9 +192,65 @@ def get_category_totals(expenses: list) -> dict:
     return dict(sorted(totals.items(), key=lambda x: x[1], reverse=True))
 
 
+def get_categories(user_id: int) -> list[str]:
+    """Return all expense and budget categories used by a user."""
+    expense_categories = {
+        row[0] for row in
+        db.session.query(Expense.category).filter_by(user_id=user_id).distinct().all()
+    }
+    budget_categories = {
+        row[0] for row in
+        db.session.query(CategoryBudget.category).filter_by(user_id=user_id).distinct().all()
+    }
+    return sorted(expense_categories | budget_categories, key=str.lower)
+
+
+def get_available_months(user_id: int) -> list[str]:
+    """Return populated months as YYYY-MM strings, newest first."""
+    dates = (
+        db.session.query(Expense.expense_date)
+        .filter_by(user_id=user_id)
+        .filter(Expense.expense_date.isnot(None))
+        .all()
+    )
+    return sorted({value.strftime('%Y-%m') for (value,) in dates}, reverse=True)
+
+
+def get_category_budgets(user_id: int) -> list[dict]:
+    budgets = (
+        CategoryBudget.query.filter_by(user_id=user_id)
+        .order_by(CategoryBudget.category.asc())
+        .all()
+    )
+    return [budget.to_dict() for budget in budgets]
+
+
+def save_category_budget(user_id: int, category: str, amount: float) -> None:
+    budget = CategoryBudget.query.filter_by(
+        user_id=user_id, category=category
+    ).first()
+    if budget:
+        budget.amount = float(amount)
+    else:
+        db.session.add(CategoryBudget(
+            user_id=user_id, category=category, amount=float(amount)
+        ))
+    db.session.commit()
+
+
+def delete_category_budget(user_id: int, budget_id: int) -> bool:
+    budget = CategoryBudget.query.filter_by(user_id=user_id, id=budget_id).first()
+    if not budget:
+        return False
+    db.session.delete(budget)
+    db.session.commit()
+    return True
+
+
 def reset_data(user_id: int) -> dict:
     """Delete all expenses and reset salary to 0 for a user."""
     Expense.query.filter_by(user_id=user_id).delete()
+    CategoryBudget.query.filter_by(user_id=user_id).delete()
     settings = _get_or_create_settings(user_id)
     settings.salary = 0.0
     db.session.commit()

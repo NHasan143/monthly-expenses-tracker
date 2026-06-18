@@ -9,6 +9,33 @@
 
 {% block content %}
 
+<form class="expense-filters card" method="GET" action="{{ url_for('main.expenses') }}">
+  <div class="filter-field filter-search">
+    <label class="form-label" for="expense-search">Search</label>
+    <input id="expense-search" class="form-input" name="q" type="search"
+           value="{{ filters.q }}" placeholder="Description or category" />
+  </div>
+  <div class="filter-field">
+    <label class="form-label" for="expense-category-filter">Category</label>
+    <select id="expense-category-filter" class="form-input" name="category">
+      <option value="">All categories</option>
+      {% for category in categories %}
+        <option value="{{ category }}" {{ 'selected' if filters.category == category }}>{{ category }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="filter-field">
+    <label class="form-label" for="expense-month-filter">Month</label>
+    <input id="expense-month-filter" class="form-input" name="month" type="month" value="{{ filters.month }}" />
+  </div>
+  <div class="filter-actions">
+    <button class="btn btn-primary" type="submit">Apply Filters</button>
+    {% if filters.q or filters.category or filters.month %}
+      <a class="btn btn-ghost" href="{{ url_for('main.expenses') }}">Clear</a>
+    {% endif %}
+  </div>
+</form>
+
 <!-- ── Summary Strip ───────────────────────────────────────────── -->
 <div class="stat-grid" style="grid-template-columns: repeat(3,1fr);">
   <div class="stat-card green">
@@ -16,7 +43,7 @@
     <div class="stat-value green">${{ "%.2f"|format(data.salary) }}</div>
   </div>
   <div class="stat-card red">
-    <div class="stat-label">Total Spent</div>
+    <div class="stat-label">Filtered Total</div>
     <div class="stat-value red">${{ "%.2f"|format(total_expenses) }}</div>
     <div class="stat-sub">{{ data.expenses|length }} expense{{ 's' if data.expenses|length != 1 }}</div>
   </div>
@@ -28,7 +55,10 @@
 
 <!-- ── Expenses Table ──────────────────────────────────────────── -->
 <div class="card">
-  <div class="card-title">Expense History</div>
+  <div class="flex justify-between items-center" style="margin-bottom:16px;">
+    <div class="card-title" style="margin-bottom:0;">Expense History</div>
+    <span class="text-muted text-sm">{{ data.expenses|length }} result{{ 's' if data.expenses|length != 1 }}</span>
+  </div>
 
   {% if data.expenses %}
   <div class="table-wrap">
@@ -36,6 +66,7 @@
       <thead>
         <tr>
           <th>#</th>
+          <th>Date</th>
           <th>Description</th>
           <th>Category</th>
           <th style="text-align:right;">Amount</th>
@@ -50,6 +81,7 @@
           {% set color = colors[cat_idx % colors|length] %}
           <tr>
             <td class="text-muted text-sm">{{ loop.index }}</td>
+            <td class="text-muted text-sm">{{ expense.expense_date }}</td>
             <td>{{ expense.description }}</td>
             <td>
               <span class="badge" style="background: {{ color }}22; color: {{ color }};">
@@ -62,10 +94,10 @@
             <td style="text-align:center;">
               <div style="display:flex; gap:8px; justify-content:center;">
                 <button class="btn btn-ghost btn-sm"
-                  onclick="openEditModal({{ loop.index0 }}, '{{ expense.description|replace("'", "\\'") }}', '{{ expense.category|replace("'", "\\'") }}', {{ expense.amount }})">
+                  onclick='openEditModal({{ expense.id }}, {{ expense.description|tojson }}, {{ expense.category|tojson }}, {{ expense.amount }}, {{ expense.expense_date|tojson }})'>
                   Edit
                 </button>
-                <form method="POST" action="{{ url_for('main.delete_expense', index=loop.index0) }}"
+                <form method="POST" action="{{ url_for('main.delete_expense', expense_id=expense.id) }}"
                   onsubmit="return confirm('Delete this expense?')">
                   <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                 </form>
@@ -78,10 +110,14 @@
   </div>
   {% else %}
     <div style="text-align:center; padding: 60px 0; color: var(--text-muted); font-size:14px;">
-      No expenses recorded.<br>
+      No expenses match these filters.<br>
+      {% if filters.q or filters.category or filters.month %}
+      <a class="btn btn-ghost btn-sm" style="margin-top:16px;" href="{{ url_for('main.expenses') }}">Clear filters</a>
+      {% else %}
       <button class="btn btn-primary btn-sm" style="margin-top:16px;" onclick="openModal('addExpenseModal')">
         + Add your first expense
       </button>
+      {% endif %}
     </div>
   {% endif %}
 </div>
@@ -95,6 +131,10 @@
       <div class="form-group">
         <label class="form-label">Description</label>
         <input class="form-input" name="description" placeholder="e.g. Monthly rent" required autofocus />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Expense Date</label>
+        <input class="form-input" name="expense_date" type="date" value="{{ default_expense_date }}" required />
       </div>
       <div class="form-group">
         <label class="form-label">Category</label>
@@ -132,6 +172,10 @@
       <div class="form-group">
         <label class="form-label">Description</label>
         <input class="form-input" name="description" id="editDescription" required />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Expense Date</label>
+        <input class="form-input" name="expense_date" id="editExpenseDate" type="date" required />
       </div>
       <div class="form-group">
         <label class="form-label">Category</label>

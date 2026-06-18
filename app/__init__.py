@@ -64,9 +64,35 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
 from flask_mail import Mail
+from sqlalchemy import inspect, text
 
 bcrypt = Bcrypt()
 mail   = Mail()
+
+
+def _migrate_database(db) -> None:
+    """Apply small additive schema changes without requiring Flask-Migrate."""
+    inspector = inspect(db.engine)
+    if 'expenses' not in inspector.get_table_names():
+        return
+
+    expense_columns = {column['name'] for column in inspector.get_columns('expenses')}
+    if 'expense_date' not in expense_columns:
+        with db.engine.begin() as connection:
+            connection.execute(text('ALTER TABLE expenses ADD COLUMN expense_date DATE'))
+            connection.execute(text(
+                'UPDATE expenses SET expense_date = DATE(created_at) '
+                'WHERE expense_date IS NULL'
+            ))
+            connection.execute(text(
+                'UPDATE expenses SET expense_date = CURRENT_DATE '
+                'WHERE expense_date IS NULL'
+            ))
+    with db.engine.begin() as connection:
+        connection.execute(text(
+            'CREATE INDEX IF NOT EXISTS ix_expenses_expense_date '
+            'ON expenses (expense_date)'
+        ))
 
 
 def _get_database_url() -> str:
@@ -139,6 +165,8 @@ def create_app():
 
     # ── Create DB tables ──────────────────────────────────────────
     with app.app_context():
+        db.create_all()
+        _migrate_database(db)
         db.create_all()
 
     # ── Blueprints ────────────────────────────────────────────────

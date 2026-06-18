@@ -46,7 +46,7 @@
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
-from datetime import datetime
+from datetime import date, datetime
 
 db = SQLAlchemy()
 
@@ -66,6 +66,8 @@ class User(UserMixin, db.Model):
                                 cascade='all, delete-orphan')
     expenses = db.relationship('Expense', backref='user',
                                 cascade='all, delete-orphan', lazy='dynamic')
+    category_budgets = db.relationship('CategoryBudget', backref='user',
+                                       cascade='all, delete-orphan', lazy='dynamic')
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -94,6 +96,7 @@ class Expense(db.Model):
     description = db.Column(db.String(255), nullable=False)
     category    = db.Column(db.String(100), nullable=False, default='Uncategorized')
     amount      = db.Column(db.Float, nullable=False)
+    expense_date = db.Column(db.Date, nullable=False, default=date.today, index=True)
     created_at  = db.Column(db.DateTime, default=datetime.utcnow)
 
     def to_dict(self) -> dict:
@@ -103,8 +106,33 @@ class Expense(db.Model):
             'description': self.description,
             'category':    self.category,
             'amount':      self.amount,
+            'expense_date': (
+                self.expense_date.isoformat()
+                if self.expense_date
+                else (self.created_at.date() if self.created_at else date.today()).isoformat()
+            ),
         }
 
     def __repr__(self):
         return f'<Expense {self.description} ${self.amount}>'
 
+
+class CategoryBudget(db.Model):
+    """A reusable monthly spending limit for one user/category pair."""
+
+    __tablename__ = 'category_budgets'
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'category', name='uq_category_budget_user_category'),
+    )
+
+    id       = db.Column(db.Integer, primary_key=True)
+    user_id  = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    category = db.Column(db.String(100), nullable=False)
+    amount   = db.Column(db.Float, nullable=False)
+
+    def to_dict(self) -> dict:
+        return {
+            'id': self.id,
+            'category': self.category,
+            'amount': self.amount,
+        }

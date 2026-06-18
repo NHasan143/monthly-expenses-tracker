@@ -224,7 +224,8 @@
   // ── Fetch data and render ─────────────────────────────────────
   async function init() {
     try {
-      const res  = await fetch('/api/monthly-expenses');
+      const year = window.MONTHLY_CHART_YEAR || new Date().getFullYear();
+      const res  = await fetch(`/api/monthly-expenses?year=${encodeURIComponent(year)}`);
       const json = await res.json();
       renderChart(json.salary, json.monthly);
     } catch (err) {

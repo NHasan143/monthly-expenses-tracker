@@ -17,28 +17,30 @@
 // Called by the "Edit" button on each expense row in expenses.html.
 // The Jinja template passes the expense's current values directly as
 // function arguments via an onclick attribute, e.g:
-//   onclick="openEditModal(0, 'House Rent', 'Accommodation', 2000)"
+//   onclick="openEditModal(42, 'House Rent', 'Accommodation', 2000, '2026-06-19')"
 //
 // This function:
 //   - Sets the edit form's POST action URL to the correct /edit/<index> route
 //   - Pre-fills the Description, Category, and Amount input fields
 //   - Opens the modal so the user sees their current values ready to change
 //
-// @param {number} index       - Zero-based position of the expense in the list
+// @param {number} expenseId   - Stable database ID for the expense
 // @param {string} description - Current description text of the expense
 // @param {string} category    - Current category of the expense
 // @param {number} amount      - Current amount of the expense
-function openEditModal(index, description, category, amount) {
+// @param {string} expenseDate - Current date in YYYY-MM-DD format
+function openEditModal(expenseId, description, category, amount, expenseDate) {
 
   // Point the form's action to the correct Flask route for this specific expense.
   // Flask's edit route is: POST /edit/<index>
-  document.getElementById('editForm').action = `/edit/${index}`;
+  document.getElementById('editForm').action = `/edit/${expenseId}`;
 
   // Pre-fill each input with the expense's existing values so the user
   // only needs to change what they want — not retype everything from scratch
   document.getElementById('editDescription').value = description;
   document.getElementById('editCategory').value = category;
   document.getElementById('editAmount').value = amount;
+  document.getElementById('editExpenseDate').value = expenseDate;
 
   // Open the modal overlay (openModal is defined in modals.js)
   openModal('editExpenseModal');
@@ -104,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Select the amount cell — 4th column in the expense table
     // (columns: #, Description, Category, Amount, Actions)
-    const amountCell = row.querySelector('td:nth-child(4)');
+    const amountCell = row.querySelector('td:nth-child(5)');
 
     // Skip rows that don't have an amount cell (e.g. "No expenses" empty state row)
     if (!amountCell) return;
